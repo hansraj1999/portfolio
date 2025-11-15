@@ -28,7 +28,19 @@ def get_mongodb_client():
             mongodb_uri = f"mongodb://{username}:{password}@{host}:{port}/{database}?authSource=admin"
         else:
             mongodb_uri = f"mongodb://{host}:{port}/{database}"
-    print(f"MONGODB_URI: {mongodb_uri}")
+    
+    # Check if connecting to MongoDB Atlas (requires SSL)
+    is_atlas = ".mongodb.net" in mongodb_uri or "mongodb+srv://" in mongodb_uri
+    
+    # Add SSL parameters if connecting to Atlas and not already in URI
+    if is_atlas and "tls=" not in mongodb_uri and "ssl=" not in mongodb_uri:
+        # If using mongodb:// (not mongodb+srv), add SSL parameters
+        if mongodb_uri.startswith("mongodb://"):
+            separator = "&" if "?" in mongodb_uri else "?"
+            mongodb_uri = f"{mongodb_uri}{separator}tls=true&tlsAllowInvalidCertificates=false"
+        # mongodb+srv:// automatically uses SSL, so no changes needed
+    
+    print(f"MONGODB_URI: {mongodb_uri[:50]}...")  # Don't print full URI with credentials
     return mongodb_uri
 
 
@@ -40,14 +52,33 @@ async def connect_to_mongodb():
         mongodb_uri = get_mongodb_client()
         database_name = os.getenv("MONGODB_DATABASE", "portfolio")
         
+        # Check if connecting to MongoDB Atlas
+        is_atlas = ".mongodb.net" in mongodb_uri or "mongodb+srv://" in mongodb_uri
+        
+        # Connection options
+        connection_options = {
+            "serverSelectionTimeoutMS": 30000,  # 30 seconds for SSL handshake
+            "connectTimeoutMS": 30000,  # 30 seconds
+            "socketTimeoutMS": 30000,  # 30 seconds
+            "retryWrites": True,
+            "retryReads": True,
+        }
+        
+        # Add SSL/TLS options for Atlas connections using mongodb:// (not mongodb+srv)
+        # mongodb+srv:// automatically handles SSL, so we only need to configure for mongodb://
+        if is_atlas and mongodb_uri.startswith("mongodb://"):
+            connection_options.update({
+                "tls": True,
+                "tlsAllowInvalidCertificates": False,
+                "tlsInsecure": False,
+            })
+        
         client = AsyncIOMotorClient(
             mongodb_uri,
-            serverSelectionTimeoutMS=5000,  # 5 second timeout
-            connectTimeoutMS=5000,
-            socketTimeoutMS=5000
+            **connection_options
         )
         
-        # Test connection
+        # Test connection with longer timeout
         await client.admin.command('ping')
         db = client[database_name]
         
