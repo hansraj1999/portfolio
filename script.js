@@ -1,5 +1,8 @@
 // API Configuration
-const API_BASE_URL = 'http://localhost:3001/api';
+// Try HTTPS first, fallback to HTTP if needed (Cloud Run should support both)
+const API_BASE_URL_HTTPS = 'https://portfolio-948422802071.asia-southeast1.run.app/api';
+const API_BASE_URL_HTTP = 'http://portfolio-948422802071.asia-southeast1.run.app/api';
+let API_BASE_URL = API_BASE_URL_HTTPS; // Default to HTTPS
 const API_TIMEOUT = 60000; // 60 seconds timeout
 const MAX_RETRIES = 100; // Maximum number of retry attempts
 const INITIAL_RETRY_DELAY = 1000; // Initial delay in milliseconds (1 second)

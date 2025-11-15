@@ -93,13 +93,15 @@ async def lifespan(app):
 
 app = FastAPI(title="Hansraj Portfolio API", lifespan=lifespan)
 
-# CORS
+# CORS - Must be configured before routes to handle preflight requests
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # change to your frontend origin in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=3600,  # Cache preflight requests for 1 hour
 )
 
 # --- Models ---
@@ -284,6 +286,7 @@ async def list_blogs(
 
 projects_router = APIRouter()
 
+@projects_router.get("")
 @projects_router.get("/")
 async def list_projects():
     projects = [
@@ -304,6 +307,21 @@ app.include_router(contact_router, prefix="/api/contact", tags=["contact"])
 app.include_router(blog_router, prefix="/api/blog", tags=["blog"])
 app.include_router(projects_router, prefix="/api/projects", tags=["projects"])
 app.include_router(seo_router, prefix="/api/seo", tags=["seo"])
+
+# Explicit OPTIONS handler for all API routes to handle preflight requests
+# This prevents redirects during preflight which breaks CORS
+@app.options("/api/{path:path}")
+async def options_handler(path: str):
+    """Handle OPTIONS preflight requests explicitly to avoid redirects."""
+    return Response(
+        status_code=200,
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS, PATCH",
+            "Access-Control-Allow-Headers": "*",
+            "Access-Control-Max-Age": "3600",
+        }
+    )
 
 # Health
 @app.get("/healthz")
