@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="All Blog Posts - Backend Engineering Articles">
+    <title>All Blog Posts | Hansraj Deghun</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation - Loaded from common navbar.html -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Blogs Section -->
+    <section id="blogs" class="blog" style="padding-top: 100px;">
+        <div class="container">
+            <h2 class="section-title" style="margin-bottom: 2rem;">
+                My Blog Posts Archive
+                <span id="blog-count" style="color: var(--text-secondary); font-size: 1.5rem; font-weight: 400; margin-left: 1rem;">
+                    <!-- Blog count will be displayed here -->
+                </span>
+            </h2>
+            <div style="max-width: 800px; margin: 0 auto 3rem; text-align: center; color: var(--text-secondary); line-height: 1.8;">
+                <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+                    I regularly share my thoughts and learnings on <strong style="color: #a3e635;">Career Growth</strong>, 
+                    <strong style="color: #a3e635;">Backend Engineering</strong>, 
+                    <strong style="color: #a3e635;">Database Internals</strong>, 
+                    <strong style="color: #a3e635;">Distributed Systems</strong>, and 
+                    <strong style="color: #a3e635;">Performance Optimizations</strong>. 
+                    Below are all the blogs I've written so far.
+                </p>
+                <!-- <a href="https://medium.com/@deghun" target="_blank" rel="noopener noreferrer" 
+                   style="display: inline-flex; align-items: center; gap: 0.5rem; color: #a3e635; 
+                          text-decoration: none; font-weight: 500; transition: opacity 0.3s ease;"
+                   onmouseover="this.style.opacity='0.8';"
+                   onmouseout="this.style.opacity='1';">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#a3e635" style="flex-shrink: 0;">
+                        <path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z"/>
+                    </svg>
+                    <span>Read on Medium</span>
+                </a> -->
+            </div>
+            <div id="blogs-container">
+                <!-- Blogs will be loaded here with infinite scroll -->
+            </div>
+            <div id="blog-loading" class="loading-container" style="display: none; margin-top: 2rem;">
+                <div class="loading-spinner"></div>
+                <p style="color: var(--text-secondary); margin-top: 1rem;">Loading more posts...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer - Loaded from common footer.html -->
+    <div id="footer-placeholder"></div>
+
+    <script src="script.js"></script>
+    <script>
+        // Ensure navbar loads even if script.js hasn't fully loaded
+        (function() {
+            if (document.getElementById('navbar-placeholder')) {
+                // Wait for loadNavbar function to be available
+                function tryLoadNavbar() {
+                    if (typeof loadNavbar === 'function') {
+                        loadNavbar();
+                    } else {
+                        setTimeout(tryLoadNavbar, 50);
+                    }
+                }
+                tryLoadNavbar();
+            }
+        })();
+        
+        // Ensure footer loads
+        (function() {
+            if (document.getElementById('footer-placeholder')) {
+                function tryLoadFooter() {
+                    if (typeof loadFooter === 'function') {
+                        loadFooter();
+                    } else {
+                        setTimeout(tryLoadFooter, 50);
+                    }
+                }
+                tryLoadFooter();
+            }
+        })();
+        
+        // Backup initialization - ensure blogs load even if DOMContentLoaded already fired
+        (function() {
+            console.log('Blogs page inline script running');
+            if (document.getElementById('blogs-container')) {
+                console.log('blogs-container found, ensuring initialization');
+                // Wait for script.js to fully load
+                function tryInit() {
+                    if (typeof initInfiniteScroll === 'function' && typeof API_BASE_URL !== 'undefined') {
+                        console.log('Calling initInfiniteScroll from inline script');
+                        // Check if already initialized by checking if blogs are loaded
+                        const container = document.getElementById('blogs-container');
+                        if (container && container.children.length === 0) {
+                            initInfiniteScroll();
+                        } else {
+                            console.log('Blogs already loaded, skipping initialization');
+                        }
+                    } else {
+                        console.log('Waiting for script.js to load...');
+                        setTimeout(tryInit, 100);
+                    }
+                }
+                // Start trying after a short delay
+                setTimeout(tryInit, 300);
+            }
+        })();
+    </script>
+</body>
+</html>
+
