@@ -298,16 +298,16 @@ async function loadBlogPosts(page = 1, limit = 5) {
         
         blogList.innerHTML = posts.map(post => `
             ${post.created_at && post.link ? `
-                <p style="font-size: 0.875rem; margin: 0; line-height: 1.8; color: #ffffff;">
-                    <span style="color: #a3e635;">•</span> <span style="color: rgba(255, 255, 255, 0.6);">${formatDate(post.created_at)}</span> : <a href="${escapeHtml(post.link)}" target="_blank" rel="noopener noreferrer" style="color: #a3e635; text-decoration: none; transition: opacity 0.3s ease;" onmouseover="this.style.opacity='0.8';" onmouseout="this.style.opacity='1';">${escapeHtml(post.title)}</a>
+                <p style="font-size: 0.875rem; margin: 0; line-height: 1.8; color: #ffffff; word-wrap: break-word; overflow-wrap: break-word;">
+                    <span style="color: #a3e635;">•</span> <span style="color: rgba(255, 255, 255, 0.6);">${formatDate(post.created_at)}</span> : <a href="${escapeHtml(post.link)}" target="_blank" rel="noopener noreferrer" style="color: #a3e635; text-decoration: none; transition: opacity 0.3s ease; word-wrap: break-word; overflow-wrap: break-word;" onmouseover="this.style.opacity='0.8';" onmouseout="this.style.opacity='1';">${escapeHtml(post.title)}</a>
                 </p>
             ` : post.created_at ? `
-                <p style="font-size: 0.875rem; margin: 0; line-height: 1.8; color: #ffffff;">
-                    <span style="color: #a3e635;">•</span> <span style="color: rgba(255, 255, 255, 0.6);">${formatDate(post.created_at)}</span> : <span style="color: #a3e635;">${escapeHtml(post.title)}</span>
+                <p style="font-size: 0.875rem; margin: 0; line-height: 1.8; color: #ffffff; word-wrap: break-word; overflow-wrap: break-word;">
+                    <span style="color: #a3e635;">•</span> <span style="color: rgba(255, 255, 255, 0.6);">${formatDate(post.created_at)}</span> : <span style="color: #a3e635; word-wrap: break-word; overflow-wrap: break-word;">${escapeHtml(post.title)}</span>
                 </p>
             ` : `
-                <p style="font-size: 0.875rem; margin: 0; line-height: 1.8; color: #ffffff;">
-                    <span style="color: #a3e635;">•</span> <span style="color: #a3e635;">${escapeHtml(post.title)}</span>
+                <p style="font-size: 0.875rem; margin: 0; line-height: 1.8; color: #ffffff; word-wrap: break-word; overflow-wrap: break-word;">
+                    <span style="color: #a3e635; word-wrap: break-word; overflow-wrap: break-word;">${escapeHtml(post.title)}</span>
                 </p>
             `}
         `).join('');
