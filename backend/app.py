@@ -188,6 +188,21 @@ async def contact_endpoint(payload: ContactRequest, background_tasks: Background
 # Blog and projects
 blog_router = APIRouter()
 
+@blog_router.options("")
+@blog_router.options("/")
+async def blog_options():
+    """Handle OPTIONS preflight for blog endpoint."""
+    return Response(
+        status_code=200,
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, OPTIONS",
+            "Access-Control-Allow-Headers": "*",
+            "Access-Control-Max-Age": "3600",
+        }
+    )
+
+@blog_router.get("")
 @blog_router.get("/")
 async def list_blogs(
     page: int = Query(1, ge=1, description="Page number (1-indexed)"),
@@ -286,6 +301,20 @@ async def list_blogs(
 
 projects_router = APIRouter()
 
+@projects_router.options("")
+@projects_router.options("/")
+async def projects_options():
+    """Handle OPTIONS preflight for projects endpoint."""
+    return Response(
+        status_code=200,
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, OPTIONS",
+            "Access-Control-Allow-Headers": "*",
+            "Access-Control-Max-Age": "3600",
+        }
+    )
+
 @projects_router.get("")
 @projects_router.get("/")
 async def list_projects():
@@ -310,6 +339,7 @@ app.include_router(seo_router, prefix="/api/seo", tags=["seo"])
 
 # Explicit OPTIONS handler for all API routes to handle preflight requests
 # This prevents redirects during preflight which breaks CORS
+# Note: This is a fallback for routes that don't have explicit OPTIONS handlers
 @app.options("/api/{path:path}")
 async def options_handler(path: str):
     """Handle OPTIONS preflight requests explicitly to avoid redirects."""
