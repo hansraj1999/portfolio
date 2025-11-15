@@ -171,7 +171,22 @@ def generate_og_image(title: str = "Hansraj — Backend Engineer") -> BytesIO:
 # --- Routers ---
 contact_router = APIRouter()
 
-@contact_router.post("/", response_class=JSONResponse)
+@contact_router.options("")
+@contact_router.options("/")
+async def contact_options():
+    """Handle OPTIONS preflight for contact endpoint."""
+    return Response(
+        status_code=200,
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "*",
+            "Access-Control-Max-Age": "3600",
+        }
+    )
+
+@contact_router.post("")
+@contact_router.post("/")
 async def contact_endpoint(payload: ContactRequest, background_tasks: BackgroundTasks, request: Request):
     # Basic spam protection: require referer or origin from FRONTEND_URL in prod
     origin = request.headers.get('origin') or request.headers.get('referer')

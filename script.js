@@ -1,11 +1,19 @@
 // API Configuration
-// Try HTTPS first, fallback to HTTP if needed (Cloud Run should support both)
-const API_BASE_URL_HTTPS = 'https://portfolio-948422802071.asia-southeast1.run.app/api';
-const API_BASE_URL_HTTP = 'http://portfolio-948422802071.asia-southeast1.run.app/api';
+// Read from config.js (window.API_CONFIG) or use fallback defaults
+// To change API URL, edit config.js file
+const API_BASE_URL_HTTPS = (window.API_CONFIG && window.API_CONFIG.API_BASE_URL) || 
+    window.API_BASE_URL || 
+    'https://portfolio-948422802071.asia-southeast1.run.app/api';
+
+const API_BASE_URL_HTTP = (window.API_CONFIG && window.API_CONFIG.API_BASE_URL_HTTP) || 
+    window.API_BASE_URL_HTTP || 
+    'http://portfolio-948422802071.asia-southeast1.run.app/api';
+
 let API_BASE_URL = API_BASE_URL_HTTPS; // Default to HTTPS
-const API_TIMEOUT = 60000; // 60 seconds timeout
-const MAX_RETRIES = 100; // Maximum number of retry attempts
-const INITIAL_RETRY_DELAY = 1000; // Initial delay in milliseconds (1 second)
+
+const API_TIMEOUT = (window.API_CONFIG && window.API_CONFIG.API_TIMEOUT) || 60000; // 60 seconds timeout
+const MAX_RETRIES = (window.API_CONFIG && window.API_CONFIG.MAX_RETRIES) || 100; // Maximum number of retry attempts
+const INITIAL_RETRY_DELAY = (window.API_CONFIG && window.API_CONFIG.INITIAL_RETRY_DELAY) || 1000; // Initial delay in milliseconds (1 second)
 
 // Common navbar HTML (fallback for file:// protocol or when fetch fails)
 const NAVBAR_HTML = `
