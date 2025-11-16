@@ -599,11 +599,13 @@
                         </label>
                     </div>
                     <div id="result-section" class="result-section" role="status" aria-live="polite">
-                        <div class="result-label">Short URL:</div>
-                        <div class="result-value" id="result-value"></div>
-                        <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
-                            <button class="copy-btn" id="copy-btn" aria-label="Copy short URL to clipboard">Copy to Clipboard</button>
-                            <div id="qr-code-container" style="display: none; margin-top: 1rem; text-align: center; width: 100%;">
+                        <div style="display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 300px;">
+                                <div class="result-label">Short URL:</div>
+                                <div class="result-value" id="result-value"></div>
+                                <button class="copy-btn" id="copy-btn" aria-label="Copy short URL to clipboard" style="margin-top: 1rem;">Copy to Clipboard</button>
+                            </div>
+                            <div id="qr-code-container" style="display: none; text-align: center; flex-shrink: 0;">
                                 <div class="result-label" style="margin-bottom: 0.5rem;">QR Code:</div>
                                 <img id="qr-code-image" src="" alt="QR Code" style="max-width: 200px; border: 2px solid var(--primary-color); border-radius: 8px; padding: 0.5rem; background: #ffffff;">
                                 <p style="color: var(--text-secondary); font-size: 0.875rem; margin-top: 0.5rem;">Scan to open the shortened URL</p>
@@ -1097,22 +1099,43 @@ console.log('Short URL:', data.short_url);</code></pre>
                         : `${SHORTURL_API_BASE}/${data.short_url}`;
                     showResult(fullShortUrl, 'success', true);
                     
-                    // Show QR code if available
+                    // Show QR code if requested
                     const qrContainer = document.getElementById('qr-code-container');
                     const qrImage = document.getElementById('qr-code-image');
-                    if (data.qr_code || data.qr_code_url || data.qr_code_base64) {
+                    const qrRequested = document.getElementById('qr-code-checkbox').checked;
+                    
+                    if (qrRequested) {
+                        // Try to use API-provided QR code first
                         if (data.qr_code_url) {
+                            // API provided a QR code URL
                             qrImage.src = data.qr_code_url;
                             qrContainer.style.display = 'block';
                         } else if (data.qr_code_base64) {
+                            // API provided base64 QR code
                             qrImage.src = `data:image/png;base64,${data.qr_code_base64}`;
                             qrContainer.style.display = 'block';
-                        } else if (data.qr_code && typeof data.qr_code === 'string' && data.qr_code.startsWith('data:')) {
-                            qrImage.src = data.qr_code;
+                        } else if (data.qr_code && typeof data.qr_code === 'string') {
+                            // API provided QR code (could be data URL, base64, or URL)
+                            if (data.qr_code.startsWith('data:')) {
+                                qrImage.src = data.qr_code;
+                            } else if (data.qr_code.startsWith('http')) {
+                                qrImage.src = data.qr_code;
+                            } else {
+                                // Assume it's base64 without prefix
+                                qrImage.src = `data:image/png;base64,${data.qr_code}`;
+                            }
                             qrContainer.style.display = 'block';
-                        } else if (document.getElementById('qr-code-checkbox').checked) {
-                            // If QR was requested but not returned, hide container
-                            qrContainer.style.display = 'none';
+                        } else {
+                            // API didn't return QR code, generate client-side using external service
+                            // The QR code should contain the full short URL
+                            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(fullShortUrl)}`;
+                            qrImage.src = qrApiUrl;
+                            qrImage.onerror = function() {
+                                // Fallback if QR service fails
+                                console.warn('QR code generation service failed, hiding QR code');
+                                qrContainer.style.display = 'none';
+                            };
+                            qrContainer.style.display = 'block';
                         }
                     } else {
                         qrContainer.style.display = 'none';
