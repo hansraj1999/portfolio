@@ -53,20 +53,107 @@
         
         .demo-header {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
+            position: relative;
+            padding: 1.25rem 1.5rem 1rem;
+            background: linear-gradient(135deg, rgba(163, 230, 53, 0.05) 0%, rgba(163, 230, 53, 0.02) 100%);
+            border: 2px solid var(--primary-color);
+            border-radius: 16px;
+            box-shadow: 0 0 30px rgba(163, 230, 53, 0.2), inset 0 0 30px rgba(163, 230, 53, 0.05);
+            overflow: hidden;
+        }
+        
+        .demo-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(163, 230, 53, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+        
+        .demo-header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(163, 230, 53, 0.03) 50%, transparent 70%);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% {
+                transform: translateX(-100%);
+            }
+            50% {
+                transform: translateX(100%);
+            }
+        }
+        
+        .demo-header-content {
+            position: relative;
+            z-index: 1;
         }
         
         .demo-header h1 {
-            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-size: clamp(1.75rem, 3.5vw, 3rem);
             color: var(--primary-color);
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(163, 230, 53, 0.5), 0 0 40px rgba(163, 230, 53, 0.3);
+            letter-spacing: -0.02em;
+            position: relative;
+            display: inline-block;
         }
         
+        
         .demo-header p {
-            font-size: 1.125rem;
+            font-size: clamp(0.875rem, 1.3vw, 1rem);
             color: var(--text-secondary);
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
+            line-height: 1.5;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .demo-header-badges {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .demo-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.3rem 0.7rem;
+            background: rgba(163, 230, 53, 0.1);
+            border: 1px solid var(--primary-color);
+            border-radius: 16px;
+            color: var(--primary-color);
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(163, 230, 53, 0.2);
+        }
+        
+        .demo-badge:hover {
+            background: rgba(163, 230, 53, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(163, 230, 53, 0.3);
+        }
+        
+        .demo-badge-icon {
+            font-size: 1.2rem;
         }
         
         .demo-section {
@@ -75,6 +162,12 @@
             border-radius: 16px;
             padding: 2.5rem;
             margin-bottom: 3rem;
+            box-shadow: 0 0 10px rgba(163, 230, 53, 0.1);
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .demo-section:hover {
+            box-shadow: 0 0 20px rgba(163, 230, 53, 0.2);
         }
         
         .demo-section h2 {
@@ -148,6 +241,7 @@
             border-radius: 8px;
             border: 1px solid var(--border-color);
             display: none;
+            box-shadow: 0 0 8px rgba(163, 230, 53, 0.1);
         }
         
         .result-section.show {
@@ -218,6 +312,7 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 0 8px rgba(163, 230, 53, 0.1);
         }
         
         .arch-component::before {
@@ -238,6 +333,7 @@
         .arch-component:hover {
             border-color: var(--primary-color);
             transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(163, 230, 53, 0.3);
         }
         
         .arch-icon {
@@ -264,6 +360,7 @@
             background: #0a0a0a;
             border-radius: 12px;
             border: 1px solid var(--border-color);
+            box-shadow: 0 0 10px rgba(163, 230, 53, 0.1);
         }
         
         .flow-step {
@@ -349,6 +446,213 @@
             }
         }
         
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes glow {
+            0%, 100% {
+                box-shadow: 0 0 5px rgba(163, 230, 53, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(163, 230, 53, 0.6);
+            }
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        /* Page load animations */
+        .shorturl-demo .demo-section {
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+        }
+        
+        .shorturl-demo .demo-section:nth-of-type(1) { animation-delay: 0.1s; }
+        .shorturl-demo .demo-section:nth-of-type(2) { animation-delay: 0.2s; }
+        .shorturl-demo .demo-section:nth-of-type(3) { animation-delay: 0.3s; }
+        .shorturl-demo .demo-section:nth-of-type(4) { animation-delay: 0.4s; }
+        .shorturl-demo .demo-section:nth-of-type(5) { animation-delay: 0.5s; }
+        .shorturl-demo .demo-section:nth-of-type(6) { animation-delay: 0.6s; }
+        .shorturl-demo .demo-section:nth-of-type(7) { animation-delay: 0.7s; }
+        .shorturl-demo .demo-section:nth-of-type(8) { animation-delay: 0.8s; }
+        
+        .demo-header {
+            animation: fadeInUp 0.8s ease forwards;
+        }
+        
+        /* Button animations */
+        .demo-btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(163, 230, 53, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .demo-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .demo-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* Result section animations */
+        .result-section {
+            animation: slideInUp 0.5s ease forwards;
+        }
+        
+        /* Stat card animations */
+        .stat-card {
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+        }
+        
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+        
+        .stat-value {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        /* Architecture component images */
+        .arch-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+        
+        .arch-component:hover .arch-icon {
+            transform: scale(1.2) rotate(5deg);
+        }
+        
+        .arch-icon-img {
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+            margin: 0 auto 1rem;
+            display: block;
+            filter: drop-shadow(0 0 10px rgba(163, 230, 53, 0.3));
+            transition: all 0.3s ease;
+        }
+        
+        .arch-component:hover .arch-icon-img {
+            filter: drop-shadow(0 0 20px rgba(163, 230, 53, 0.6));
+            transform: scale(1.1);
+        }
+        
+        /* Flow diagram enhancements */
+        .flow-number {
+            animation: glow 2s ease-in-out infinite;
+        }
+        
+        .flow-arrow {
+            animation: float 2s ease-in-out infinite;
+        }
+        
+        /* Feature item animations */
+        .feature-item {
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+        }
+        
+        .feature-item:nth-child(1) { animation-delay: 0.1s; }
+        .feature-item:nth-child(2) { animation-delay: 0.2s; }
+        .feature-item:nth-child(3) { animation-delay: 0.3s; }
+        .feature-item:nth-child(4) { animation-delay: 0.4s; }
+        .feature-item:nth-child(5) { animation-delay: 0.5s; }
+        .feature-item:nth-child(6) { animation-delay: 0.6s; }
+        
+        /* QR Code animation */
+        #qr-code-image {
+            animation: fadeInUp 0.6s ease forwards;
+            transition: transform 0.3s ease;
+        }
+        
+        #qr-code-image:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Input focus animations */
+        .url-input:focus {
+            animation: glow 2s ease-in-out infinite;
+        }
+        
+        /* Loading state animations */
+        .loading-pulse {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        /* Success/Error message animations */
+        .result-message {
+            animation: slideInUp 0.4s ease forwards;
+        }
+        
+        /* Architecture diagram image */
+        .architecture-diagram {
+            width: 100%;
+            max-width: 800px;
+            margin: 2rem auto;
+            display: block;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            animation: fadeInUp 0.8s ease forwards;
+            opacity: 0;
+            animation-delay: 0.3s;
+        }
+        
+        .architecture-diagram:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 20px rgba(163, 230, 53, 0.3);
+        }
+        
         .loading-spinner {
             display: inline-block;
             width: 20px;
@@ -378,11 +682,13 @@
             padding: 1rem;
             text-align: center;
             transition: all 0.3s ease;
+            box-shadow: 0 0 6px rgba(163, 230, 53, 0.1);
         }
         
         .feature-item:hover {
             border-color: var(--primary-color);
             transform: translateY(-3px);
+            box-shadow: 0 0 15px rgba(163, 230, 53, 0.25);
         }
         
         .feature-item::before {
@@ -413,11 +719,13 @@
             padding: 1.5rem;
             text-align: center;
             transition: all 0.3s ease;
+            box-shadow: 0 0 8px rgba(163, 230, 53, 0.1);
         }
         
         .stat-card:hover {
             border-color: var(--primary-color);
             transform: translateY(-3px);
+            box-shadow: 0 0 20px rgba(163, 230, 53, 0.3);
         }
         
         .stat-value {
@@ -440,6 +748,7 @@
             background: #0a0a0a;
             border-radius: 8px;
             border: 1px solid var(--border-color);
+            box-shadow: 0 0 8px rgba(163, 230, 53, 0.1);
         }
         
         .analytics-details h3 {
@@ -493,6 +802,7 @@
             border-radius: 8px;
             margin-top: 1rem;
             width: 100%;
+            box-shadow: 0 0 6px rgba(163, 230, 53, 0.1);
         }
         
         .analytics-table-container table {
@@ -557,21 +867,41 @@
     <!-- ShortURL Demo Section -->
     <section class="shorturl-demo">
         <div class="demo-container">
+            <div style="margin-bottom: 1rem;">
+                <a href="index.html" style="color: var(--primary-color); text-decoration: none; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.3s ease; padding: 0.3rem 0.7rem; border-radius: 8px; background: rgba(163, 230, 53, 0.1); border: 1px solid var(--primary-color);" onmouseover="this.style.background='rgba(163, 230, 53, 0.2)'; this.style.transform='translateX(-5px)';" onmouseout="this.style.background='rgba(163, 230, 53, 0.1)'; this.style.transform='translateX(0)';">
+                    ← Back to Portfolio
+                </a>
+            </div>
             <div class="demo-header">
-                <div style="margin-bottom: 1rem;">
-                    <a href="index.html" style="color: var(--primary-color); text-decoration: none; font-size: 0.875rem; display: inline-flex; align-items: center; gap: 0.5rem; transition: opacity 0.3s ease;" onmouseover="this.style.opacity='0.8';" onmouseout="this.style.opacity='1';">
-                        ← Back to Portfolio
-                    </a>
+                <div class="demo-header-content">
+                    <h1>ShortURL - Live Demo</h1>
+                    <p>A distributed URL shortening service built with Python, Redis, MongoDB, and NGINX. Experience the power of scalable URL shortening with real-time monitoring.</p>
+                    <div class="demo-header-badges">
+                        <div class="demo-badge">
+                            <span class="demo-badge-icon">⚡</span>
+                            <span>High Performance</span>
+                        </div>
+                        <div class="demo-badge">
+                            <span class="demo-badge-icon">🔒</span>
+                            <span>Secure & Reliable</span>
+                        </div>
+                        <div class="demo-badge">
+                            <span class="demo-badge-icon">📊</span>
+                            <span>Real-time Analytics</span>
+                        </div>
+                        <div class="demo-badge">
+                            <span class="demo-badge-icon">🚀</span>
+                            <span>Scalable Architecture</span>
+                        </div>
+                    </div>
                 </div>
-                <h1>ShortURL - Live Demo</h1>
-                <p>A distributed URL shortening service built with Python, Redis, MongoDB, and NGINX. Experience the power of scalable URL shortening with real-time monitoring.</p>
             </div>
 
             <!-- URL Shortening Section -->
             <div class="demo-section">
                 <h2>Try It Out</h2>
                 <div class="url-input-section">
-                    <div style="background: rgba(163, 230, 53, 0.1); border: 1px solid var(--primary-color); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">
+                    <div style="background: rgba(163, 230, 53, 0.1); border: 1px solid var(--primary-color); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; box-shadow: 0 0 10px rgba(163, 230, 53, 0.2);">
                         <strong style="color: var(--primary-color);">⏱️ Please wait:</strong> This service runs on GCP Cloud Run and may take 10-30 seconds to boot up if the instance is cold. The first request after inactivity can be slower as the container needs to start. Subsequent requests will be much faster!
                     </div>
                     <div class="input-group">
@@ -665,7 +995,7 @@
                     The system uses distributed components to handle millions of URL shortening requests efficiently.
                 </p>
                 
-                <div style="background: #0a0a0a; border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem; margin-bottom: 2rem;">
+                <div style="background: #0a0a0a; border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 0 10px rgba(163, 230, 53, 0.1);">
                     <h3 style="color: var(--primary-color); margin-bottom: 1.5rem; font-size: 1.25rem;">Core Technologies</h3>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
                         <div>
@@ -705,34 +1035,91 @@
                     </div>
                 </div>
                 
+                <!-- Architecture Diagram Image -->
+                <div style="text-align: center; margin: 2rem 0;">
+                    <img 
+                        src="https://via.placeholder.com/800x400/0a0a0a/a3e635?text=ShortURL+Architecture+Diagram" 
+                        alt="ShortURL System Architecture Diagram"
+                        class="architecture-diagram"
+                        onerror="this.style.display='none'"
+                    >
+                </div>
+                
                 <div class="architecture-grid">
                     <div class="arch-component">
-                        <span class="arch-icon">🐍</span>
+                        <img 
+                            src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" 
+                            alt="Python"
+                            class="arch-icon-img"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                        >
+                        <span class="arch-icon" style="display: none;">🐍</span>
                         <h3>Python FastAPI</h3>
                         <p>High-performance async API server handling URL shortening requests with Squid hashing algorithm</p>
                     </div>
                     <div class="arch-component">
-                        <span class="arch-icon">⚡</span>
+                        <img 
+                            src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/fastapi/fastapi-original.svg" 
+                            alt="FastAPI"
+                            class="arch-icon-img"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                        >
+                        <span class="arch-icon" style="display: none;">⚡</span>
+                        <h3>FastAPI</h3>
+                        <p>Modern, fast web framework for building APIs with automatic OpenAPI documentation</p>
+                    </div>
+                    <div class="arch-component">
+                        <img 
+                            src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redis/redis-original.svg" 
+                            alt="Redis"
+                            class="arch-icon-img"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                        >
+                        <span class="arch-icon" style="display: none;">⚡</span>
                         <h3>Redis</h3>
                         <p>In-memory database using INCR for unique ID generation and distributed locking for thread safety</p>
                     </div>
                     <div class="arch-component">
-                        <span class="arch-icon">🍃</span>
+                        <img 
+                            src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" 
+                            alt="MongoDB"
+                            class="arch-icon-img"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                        >
+                        <span class="arch-icon" style="display: none;">🍃</span>
                         <h3>MongoDB</h3>
                         <p>Persistent storage for mapping short codes to original URLs with high availability</p>
                     </div>
                     <div class="arch-component">
-                        <span class="arch-icon">🌐</span>
+                        <img 
+                            src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nginx/nginx-original.svg" 
+                            alt="NGINX"
+                            class="arch-icon-img"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                        >
+                        <span class="arch-icon" style="display: none;">🌐</span>
                         <h3>NGINX</h3>
                         <p>Load balancer distributing incoming requests across multiple application instances</p>
                     </div>
                     <div class="arch-component">
-                        <span class="arch-icon">📊</span>
+                        <img 
+                            src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/prometheus/prometheus-original.svg" 
+                            alt="Prometheus"
+                            class="arch-icon-img"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                        >
+                        <span class="arch-icon" style="display: none;">📊</span>
                         <h3>Prometheus</h3>
                         <p>Metrics collection and monitoring system tracking application performance</p>
                     </div>
                     <div class="arch-component">
-                        <span class="arch-icon">📈</span>
+                        <img 
+                            src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/grafana/grafana-original.svg" 
+                            alt="Grafana"
+                            class="arch-icon-img"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                        >
+                        <span class="arch-icon" style="display: none;">📈</span>
                         <h3>Grafana</h3>
                         <p>Visualization dashboard providing real-time insights into system metrics</p>
                     </div>
@@ -746,7 +1133,10 @@
                     <div class="flow-step">
                         <div class="flow-number">1</div>
                         <div class="flow-content">
-                            <h4>Client Request</h4>
+                            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="Client" style="width: 32px; height: 32px; filter: drop-shadow(0 0 5px rgba(163, 230, 53, 0.5));">
+                                <h4>Client Request</h4>
+                            </div>
                             <p>User submits a long URL through the web interface or API</p>
                         </div>
                     </div>
@@ -754,7 +1144,10 @@
                     <div class="flow-step">
                         <div class="flow-number">2</div>
                         <div class="flow-content">
-                            <h4>NGINX Load Balancer</h4>
+                            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nginx/nginx-original.svg" alt="NGINX" style="width: 32px; height: 32px; filter: drop-shadow(0 0 5px rgba(163, 230, 53, 0.5));">
+                                <h4>NGINX Load Balancer</h4>
+                            </div>
                             <p>Request is distributed to one of the available application instances for optimal load distribution</p>
                         </div>
                     </div>
@@ -762,7 +1155,10 @@
                     <div class="flow-step">
                         <div class="flow-number">3</div>
                         <div class="flow-content">
-                            <h4>Redis ID Generation</h4>
+                            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redis/redis-original.svg" alt="Redis" style="width: 32px; height: 32px; filter: drop-shadow(0 0 5px rgba(163, 230, 53, 0.5));">
+                                <h4>Redis ID Generation</h4>
+                            </div>
                             <p>Application uses Redis INCR to generate a unique sequential ID with distributed locking for thread safety</p>
                         </div>
                     </div>
@@ -770,7 +1166,10 @@
                     <div class="flow-step">
                         <div class="flow-number">4</div>
                         <div class="flow-content">
-                            <h4>Squid Hashing</h4>
+                            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python" style="width: 32px; height: 32px; filter: drop-shadow(0 0 5px rgba(163, 230, 53, 0.5));">
+                                <h4>Squid Hashing</h4>
+                            </div>
                             <p>Python's Squid library converts the ID to a short, URL-safe hash code</p>
                         </div>
                     </div>
@@ -778,7 +1177,10 @@
                     <div class="flow-step">
                         <div class="flow-number">5</div>
                         <div class="flow-content">
-                            <h4>MongoDB Storage</h4>
+                            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" alt="MongoDB" style="width: 32px; height: 32px; filter: drop-shadow(0 0 5px rgba(163, 230, 53, 0.5));">
+                                <h4>MongoDB Storage</h4>
+                            </div>
                             <p>Short code and original URL mapping is persisted in MongoDB for future lookups</p>
                         </div>
                     </div>
@@ -786,7 +1188,10 @@
                     <div class="flow-step">
                         <div class="flow-number">6</div>
                         <div class="flow-content">
-                            <h4>Response & Monitoring</h4>
+                            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/prometheus/prometheus-original.svg" alt="Prometheus" style="width: 32px; height: 32px; filter: drop-shadow(0 0 5px rgba(163, 230, 53, 0.5));">
+                                <h4>Response & Monitoring</h4>
+                            </div>
                             <p>Short URL is returned to the client while Prometheus collects metrics for monitoring</p>
                         </div>
                     </div>
