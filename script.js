@@ -252,7 +252,8 @@ async function loadProjects() {
         projectsGrid.innerHTML = projects.map(project => {
             // Determine GitHub and demo URLs
             const githubUrl = project.github_url || (project.url && project.url.includes('github.com') ? project.url : null);
-            const demoUrl = project.demo_url || project.live_url || null;
+            const demoUrlRaw = project.demo_url || project.live_url || null;
+            const demoUrl = demoUrlRaw ? normalizeDemoUrl(demoUrlRaw) : null;
             const hasDetails = project.details || project.technologies || project.features;
             
             return `
@@ -521,6 +522,41 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+// Normalize demo URL - if it's a relative path, prepend current domain
+function normalizeDemoUrl(url) {
+    if (!url) return null;
+    
+    // If it's already a full URL, return as is
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+        return url;
+    }
+    
+    // If it starts with /, it's a relative path on the same domain
+    if (url.startsWith('/')) {
+        // Check if we're on file:// protocol (local file)
+        if (window.location.protocol === 'file:') {
+            // For file://, we can't use absolute paths properly
+            // Use relative path from current file location
+            const currentPath = window.location.pathname;
+            const currentDir = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+            // Remove leading / from url and construct relative path
+            return currentDir + url.substring(1);
+        }
+        // For http/https, prepend origin to get full URL
+        // This will create URLs like https://hansraj.me/shorturl
+        return window.location.origin + url;
+    }
+    
+    // Otherwise, treat as relative path (no leading /)
+    if (window.location.protocol === 'file:') {
+        const currentPath = window.location.pathname;
+        const currentDir = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+        return currentDir + url.replace(/^\//, '');
+    }
+    // For http/https, construct full URL
+    return window.location.origin + '/' + url.replace(/^\//, '');
+}
+
 // Show project details modal
 function showProjectDetails(project) {
     // Create modal if it doesn't exist
@@ -533,7 +569,8 @@ function showProjectDetails(project) {
     }
     
     const githubUrl = project.github_url || (project.url && project.url.includes('github.com') ? project.url : null);
-    const demoUrl = project.demo_url || project.live_url || null;
+    const demoUrlRaw = project.demo_url || project.live_url || null;
+    const demoUrl = demoUrlRaw ? normalizeDemoUrl(demoUrlRaw) : null;
     
     modal.innerHTML = `
         <div class="project-modal-content">
