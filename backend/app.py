@@ -69,7 +69,7 @@ from fastapi.responses import StreamingResponse, JSONResponse
 from pydantic import BaseModel, EmailStr
 from PIL import Image, ImageDraw, ImageFont
 from communications.email import lifespan as email_lifespan, send_email
-from database import connect_to_mongodb, close_mongodb_connection, get_blogs_collection
+from database import connect_to_mongodb, close_mongodb_connection, get_blogs_collection, get_projects_collection
 from contextlib import asynccontextmanager
 
 # Load env
@@ -333,11 +333,50 @@ async def projects_options():
 @projects_router.get("")
 @projects_router.get("/")
 async def list_projects():
-    projects = [
-        {"name": "FranzMQ", "desc": "Kafka-like messaging queue built in Go", "url": "https://github.com/hansraj/franzmq"},
-        {"name": "Bitcask-Clone", "desc": "Bitcask-style KV store in Go", "url": "https://github.com/hansraj/bitcask-go"},
-    ]
-    return projects
+    """
+    Fetch projects from MongoDB.
+    
+    Returns list of projects with fields: title, desc, github_link, live_demo_link
+    Maps to frontend format: name, desc, github_url, demo_url
+    """
+    try:
+        projects_collection = get_projects_collection()
+        
+        # Fetch all published projects from MongoDB, sorted by created_at (newest first)
+        cursor = projects_collection.find({"published": True}).sort("created_at", -1)
+        projects = await cursor.to_list(length=None)  # Get all projects
+        
+        # Convert ObjectId to string and format response
+        formatted_projects = []
+        for project in projects:
+            formatted_project = {
+                "name": project.get("title", ""),  # Map title to name for frontend
+                "desc": project.get("desc", ""),
+                "github_url": project.get("github_link", ""),  # Map github_link to github_url
+                "demo_url": project.get("live_demo_link", ""),  # Map live_demo_link to demo_url
+            }
+            
+            # Include optional fields if they exist
+            if project.get("details"):
+                formatted_project["details"] = project.get("details")
+            if project.get("technologies"):
+                formatted_project["technologies"] = project.get("technologies")
+            if project.get("features"):
+                formatted_project["features"] = project.get("features")
+            
+            # Legacy support: if url exists and no github_url, use it
+            if not formatted_project["github_url"] and project.get("url"):
+                formatted_project["github_url"] = project.get("url")
+            
+            formatted_projects.append(formatted_project)
+        
+        return formatted_projects
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error fetching projects from MongoDB: {e}")
+        # Fallback to empty list if MongoDB fails
+        return []
 
 seo_router = APIRouter()
 

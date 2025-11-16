@@ -115,3 +115,8 @@ def get_blogs_collection():
     database = get_database()
     return database.blogs
 
+
+def get_projects_collection():
+    """Get projects collection from database."""
+    database = get_database()
+    return database.projects
