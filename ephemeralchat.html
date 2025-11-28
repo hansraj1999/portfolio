@@ -617,6 +617,43 @@
             opacity: 0.6;
         }
         
+        /* Custom scrollbar styling for chat messages container */
+        #chat-messages-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        #chat-messages-container::-webkit-scrollbar-track {
+            background: #0a0a0a;
+            border-radius: 4px;
+        }
+        
+        #chat-messages-container::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+        
+        #chat-messages-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(163, 230, 53, 0.8);
+        }
+        
+        /* Firefox scrollbar styling */
+        #chat-messages-container {
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) #0a0a0a;
+        }
+        
+        /* Pulse animation for online indicator */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(0.8);
+            }
+        }
+        
         @media (max-width: 768px) {
             #room-setup-section > div {
                 grid-template-columns: 1fr !important;
@@ -763,8 +800,9 @@
                                 <p style="color: var(--text-secondary); font-size: 0.875rem;" id="current-room-id">Room ID: -</p>
                             </div>
                             <div style="text-align: right;">
-                                <div style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.5rem;">
-                                    <span id="online-count">0</span>
+                                <div style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; justify-content: flex-end;">
+                                    <span id="online-indicator" style="width: 8px; height: 8px; background: var(--primary-color); border-radius: 50%; display: inline-block; animation: pulse 2s infinite;"></span>
+                                    <span id="online-count">0</span> people online
                                 </div>
                                 <button id="leave-room-btn" class="demo-btn" style="padding: 0.5rem 1rem; font-size: 0.875rem; background: transparent; color: var(--primary-color); border-color: var(--primary-color);">Leave Room</button>
                             </div>
