@@ -1653,7 +1653,7 @@ ws.onmessage = (event) => {
                                 showChatMessage('System', data.message, 'info');
                             }
                         } else if (data.type === 'message') {
-                            showChatMessage(data.sender || 'User', data.content, 'message');
+                            showChatMessage(data.sender || 'User', data.content, 'message', data.timestamp || data.sent_at || null);
                         } else if (data.type === 'user_joined') {
                             const userId = data.user_id || data.connection_id || data.connectionId;
                             const userName = data.sender || data.user_name || data.name || `User${userId ? userId.substring(0, 8) : ''}`;
@@ -2042,18 +2042,38 @@ ws.onmessage = (event) => {
             });
         }
         
+        // Format timestamp for display
+        function formatTimestamp(timestamp) {
+            const date = timestamp ? new Date(timestamp) : new Date();
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
+        
         // Show chat message
-        function showChatMessage(sender, content, type = 'message') {
+        function showChatMessage(sender, content, type = 'message', timestamp = null) {
             if (!chatMessagesContainer) return;
             const messageDiv = document.createElement('div');
-            messageDiv.style.cssText = 'padding: 0.75rem; background: #0a0a0a; border-radius: 8px; border: 1px solid var(--border-color);';
+            messageDiv.style.cssText = 'padding: 0.75rem; background: #0a0a0a; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 0.25rem;';
+            
+            // Header row with sender and timestamp
+            const headerDiv = document.createElement('div');
+            headerDiv.style.cssText = 'display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;';
             
             const senderSpan = document.createElement('span');
-            senderSpan.style.cssText = 'color: var(--primary-color); font-weight: 600; margin-right: 0.5rem;';
+            senderSpan.style.cssText = 'color: var(--primary-color); font-weight: 600;';
             senderSpan.textContent = sender + ':';
             
+            const timestampSpan = document.createElement('span');
+            timestampSpan.style.cssText = 'color: var(--text-secondary); font-size: 0.75rem; font-weight: 400;';
+            timestampSpan.textContent = formatTimestamp(timestamp);
+            
+            headerDiv.appendChild(senderSpan);
+            headerDiv.appendChild(timestampSpan);
+            
+            // Content
             const contentSpan = document.createElement('span');
-            contentSpan.style.cssText = 'color: var(--text-color);';
+            contentSpan.style.cssText = 'color: var(--text-color); word-wrap: break-word;';
             contentSpan.textContent = content;
             
             if (type === 'error') {
@@ -2066,7 +2086,7 @@ ws.onmessage = (event) => {
                 senderSpan.style.color = 'var(--text-secondary)';
             }
             
-            messageDiv.appendChild(senderSpan);
+            messageDiv.appendChild(headerDiv);
             messageDiv.appendChild(contentSpan);
             
             // Remove placeholder if exists
