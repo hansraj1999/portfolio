@@ -85,7 +85,7 @@ async function loadFooter() {
 async function loadNavbar() {
     const navbarPlaceholder = document.getElementById('navbar-placeholder');
     if (!navbarPlaceholder) {
-        console.error('Navbar placeholder not found');
+        // Navbar placeholder not found - this is normal for pages that have their own navbar (like ephemeralchat.html)
         return;
     }
 
@@ -187,6 +187,10 @@ async function fetchWithRetry(url, options = {}, retries = MAX_RETRIES, attempt 
 
 // Show loading animation
 function showLoading(element) {
+    if (!element) {
+        console.warn('showLoading: element is null');
+        return;
+    }
     element.innerHTML = `
         <div class="loading-container" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
             <div class="loading-spinner"></div>
@@ -237,7 +241,9 @@ async function loadProjects() {
     const projectsGrid = document.getElementById('projects-grid');
     
     // Show loading animation
-    showLoading(projectsGrid);
+    if (projectsGrid) {
+        showLoading(projectsGrid);
+    }
     
     try {
         const response = await fetchWithRetry(`${API_BASE_URL}/projects`, {
@@ -248,6 +254,10 @@ async function loadProjects() {
         });
         
         const projects = await response.json();
+        
+        if (!projectsGrid) {
+            return;
+        }
         
         if (projects.length === 0) {
             projectsGrid.innerHTML = '<p style="text-align: center; color: var(--text-secondary); grid-column: 1 / -1;">No projects available yet.</p>';
@@ -339,7 +349,9 @@ async function loadProjects() {
         const errorMessage = error.message.includes('timeout') 
             ? 'Request timeout: The server took too long to respond after multiple retries. Please check your connection.'
             : `Failed to load projects after ${MAX_RETRIES} attempts. Please check if the backend is running.`;
-        projectsGrid.innerHTML = `<p style="text-align: center; color: #f87171; grid-column: 1 / -1;">${errorMessage}</p>`;
+        if (projectsGrid) {
+            projectsGrid.innerHTML = `<p style="text-align: center; color: #f87171; grid-column: 1 / -1;">${errorMessage}</p>`;
+        }
     }
 }
 
@@ -364,7 +376,9 @@ async function loadBlogPosts(page = 1, limit = 5) {
     if (!blogList) return;
     
     // Show loading animation
-    showLoading(blogList);
+    if (blogList) {
+        showLoading(blogList);
+    }
     
     try {
         const response = await fetchWithRetry(`${API_BASE_URL}/blog?page=${page}&limit=${limit}`, {
@@ -473,67 +487,74 @@ function addPaginationControls(pagination, loadFunction) {
 const contactForm = document.getElementById('contact-form');
 const formMessage = document.getElementById('form-message');
 
-contactForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const formData = {
-        name: document.getElementById('name').value.trim(),
-        email: document.getElementById('email').value.trim(),
-        message: document.getElementById('message').value.trim()
-    };
-    
-    // Validate
-    if (!formData.name || !formData.email || !formData.message) {
-        showFormMessage('Please fill in all fields.', 'error');
-        return;
-    }
-    
-    // Disable submit button
-    const submitBtn = contactForm.querySelector('button[type="submit"]');
-    const originalText = submitBtn.textContent;
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Sending...';
-    
-    try {
-        const response = await fetchWithRetry(`${API_BASE_URL}/contact`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData)
-        });
+if (contactForm && formMessage) {
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
         
-        const data = await response.json();
+        const formData = {
+            name: document.getElementById('name').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            message: document.getElementById('message').value.trim()
+        };
         
-        if (response.ok) {
-            showFormMessage(data.message || 'Thank you! Your message has been sent.', 'success');
-            contactForm.reset();
-        } else {
-            showFormMessage(data.detail || 'Failed to send message. Please try again.', 'error');
+        // Validate
+        if (!formData.name || !formData.email || !formData.message) {
+            showFormMessage('Please fill in all fields.', 'error');
+            return;
         }
-    } catch (error) {
-        console.error('Error sending message after all retries:', error);
-        const errorMessage = error.message.includes('timeout') 
-            ? 'Request timeout: The server took too long to respond after multiple retries. Please check your connection.'
-            : `Failed to send message after ${MAX_RETRIES} attempts. Please check if the backend is running.`;
-        showFormMessage(errorMessage, 'error');
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = originalText;
-    }
-});
+        
+        // Disable submit button
+        const submitBtn = contactForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
+        
+        try {
+            const response = await fetchWithRetry(`${API_BASE_URL}/contact`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                showFormMessage(data.message || 'Thank you! Your message has been sent.', 'success');
+                contactForm.reset();
+            } else {
+                showFormMessage(data.detail || 'Failed to send message. Please try again.', 'error');
+            }
+        } catch (error) {
+            console.error('Error sending message after all retries:', error);
+            const errorMessage = error.message.includes('timeout') 
+                ? 'Request timeout: The server took too long to respond after multiple retries. Please check your connection.'
+                : `Failed to send message after ${MAX_RETRIES} attempts. Please check if the backend is running.`;
+            showFormMessage(errorMessage, 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
+    });
+}
 
 function showFormMessage(message, type) {
-    formMessage.textContent = message;
-    formMessage.className = `form-message ${type}`;
-    
-    // Scroll to message
-    formMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    
-    // Hide after 5 seconds
-    setTimeout(() => {
-        formMessage.className = 'form-message';
-    }, 5000);
+    if (formMessage) {
+        formMessage.textContent = message;
+        formMessage.className = `form-message ${type}`;
+        
+        // Scroll to message
+        formMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        
+        // Hide after 5 seconds
+        setTimeout(() => {
+            if (formMessage) {
+                formMessage.textContent = '';
+                formMessage.className = 'form-message';
+            }
+        }, 5000);
+    }
 }
 
 // Utility function to escape HTML
@@ -696,12 +717,22 @@ function initializePage() {
     // Check if we're on the blogs page
     const isBlogsPage = document.getElementById('blogs-container') !== null;
     
-    console.log('Initializing page, isBlogsPage:', isBlogsPage);
+    // Check if we're on a product/demo page (ephemeralchat, shorturl, etc.)
+    const isProductPage = document.getElementById('room-setup-section') !== null || 
+                          document.getElementById('shorturl-demo') !== null ||
+                          window.location.pathname.includes('ephemeralchat') ||
+                          window.location.pathname.includes('shorturl');
+    
+    console.log('Initializing page, isBlogsPage:', isBlogsPage, 'isProductPage:', isProductPage);
     
     if (isBlogsPage) {
         // Initialize infinite scroll for blogs page
         console.log('Blogs page detected, initializing infinite scroll');
         initInfiniteScroll();
+    } else if (isProductPage) {
+        // Product/demo page - don't load projects or blogs
+        console.log('Product page detected, skipping projects and blogs');
+        return;
     } else {
         // Load homepage data
         console.log('Homepage detected, loading projects and blogs');

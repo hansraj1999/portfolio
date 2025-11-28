@@ -38,6 +38,242 @@
     <title>EphemeralChat - Self-Destructing Chat Rooms | Hansraj Deghun</title>
     
     <style>
+        .demo-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+            padding: 1.25rem 1.5rem 1rem;
+            background: linear-gradient(135deg, rgba(163, 230, 53, 0.05) 0%, rgba(163, 230, 53, 0.02) 100%);
+            border: 2px solid var(--primary-color);
+            border-radius: 16px;
+            box-shadow: 0 0 30px rgba(163, 230, 53, 0.2), inset 0 0 30px rgba(163, 230, 53, 0.05);
+            overflow: hidden;
+        }
+        
+        .demo-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(163, 230, 53, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+        
+        .demo-header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(163, 230, 53, 0.03) 50%, transparent 70%);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% {
+                transform: translateX(-100%);
+            }
+            50% {
+                transform: translateX(100%);
+            }
+        }
+        
+        .demo-header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .demo-header h1 {
+            font-size: clamp(1.75rem, 3.5vw, 3rem);
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(163, 230, 53, 0.5), 0 0 40px rgba(163, 230, 53, 0.3);
+            letter-spacing: -0.02em;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .demo-header p {
+            font-size: clamp(0.875rem, 1.3vw, 1rem);
+            color: var(--text-secondary);
+            max-width: 900px;
+            margin: 0 auto;
+            line-height: 1.5;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .demo-header-badges {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .demo-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.3rem 0.7rem;
+            background: rgba(163, 230, 53, 0.1);
+            border: 1px solid var(--primary-color);
+            border-radius: 16px;
+            color: var(--primary-color);
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(163, 230, 53, 0.2);
+        }
+        
+        .demo-badge:hover {
+            background: rgba(163, 230, 53, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(163, 230, 53, 0.3);
+        }
+        
+        .demo-badge-icon {
+            font-size: 1rem;
+        }
+        
+        .success-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #0a0a0a;
+            border: 2px solid var(--primary-color);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            z-index: 1000;
+            box-shadow: 0 0 30px rgba(163, 230, 53, 0.5);
+            animation: popupSlideIn 0.3s ease;
+        }
+        
+        @keyframes popupSlideIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+        
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 999;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        .popup-header {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .popup-content {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .popup-detail {
+            background: rgba(163, 230, 53, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .popup-detail-label {
+            color: var(--primary-color);
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .popup-detail-value {
+            color: var(--text-color);
+            font-size: 0.875rem;
+            word-break: break-all;
+            font-family: monospace;
+        }
+        
+        .popup-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+        
+        .popup-close-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            color: #000000;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .popup-close-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(163, 230, 53, 0.3);
+        }
+        
+        .popup-copy-btn {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .popup-copy-btn:hover {
+            background: rgba(163, 230, 53, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
         .product-hero {
             min-height: 100vh;
             display: flex;
@@ -358,7 +594,33 @@
             font-size: 1.25rem;
         }
         
+        .url-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: #0a0a0a;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        
+        .url-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(163, 230, 53, 0.3);
+        }
+        
+        .url-input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+        
         @media (max-width: 768px) {
+            #room-setup-section > div {
+                grid-template-columns: 1fr !important;
+            }
             .product-hero {
                 padding-top: 100px;
             }
@@ -380,21 +642,156 @@
         </div>
     </nav>
     
-    <!-- Hero Section -->
-    <section class="product-hero">
-        <div class="product-hero-content">
-            <h1 class="product-title">EphemeralChat</h1>
-            <p class="product-tagline">
-                A complete backend-focused ephemeral (self-destructing) chat rooms project. 
-                Built with FastAPI, WebSockets, and Redis for real-time messaging with automatic room expiration.
-            </p>
-            <div class="product-buttons">
-                <a href="https://github.com/hansraj1999/EphemeralChat" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
-                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                    </svg>
-                    View on GitHub
+    <!-- Interactive Demo Section -->
+    <section class="shorturl-demo">
+        <div class="demo-container">
+            <div style="margin-bottom: 1rem;">
+                <a href="/" style="color: var(--primary-color); text-decoration: none; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.3s ease; padding: 0.3rem 0.7rem; border-radius: 8px; background: rgba(163, 230, 53, 0.1); border: 1px solid var(--primary-color);" onmouseover="this.style.background='rgba(163, 230, 53, 0.2)'; this.style.transform='translateX(-5px)';" onmouseout="this.style.background='rgba(163, 230, 53, 0.1)'; this.style.transform='translateX(0)'">
+                    ← Back to Portfolio
                 </a>
+            </div>
+            <div class="demo-header">
+                <div class="demo-header-content">
+                    <h1>EphemeralChat - Live Demo</h1>
+                    <p>A complete backend-focused ephemeral (self-destructing) chat rooms project. Built with FastAPI, WebSockets, and Redis for real-time messaging with automatic room expiration.</p>
+                    <div class="demo-header-badges">
+                        <div class="demo-badge">
+                            <span class="demo-badge-icon">⚡</span>
+                            <span>Real-Time Messaging</span>
+                        </div>
+                        <div class="demo-badge">
+                            <span class="demo-badge-icon">🔒</span>
+                            <span>Password Protected</span>
+                        </div>
+                        <div class="demo-badge">
+                            <span class="demo-badge-icon">⏱️</span>
+                            <span>Auto-Expiring Rooms</span>
+                        </div>
+                        <div class="demo-badge">
+                            <span class="demo-badge-icon">🚀</span>
+                            <span>Horizontal Scaling</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(163, 230, 53, 0.2);">
+                        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 0.75rem; line-height: 1.5;">
+                            Need this service for your use case or want a tailored solution?
+                        </p>
+                        <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+                            <a href="/#contact" style="text-decoration: none; display: inline-block; padding: 0.4rem 0.9rem; background: var(--primary-color); color: #000000; border-radius: 8px; font-size: 0.8rem; font-weight: 500; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(163, 230, 53, 0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 0 15px rgba(163, 230, 53, 0.5)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 0 10px rgba(163, 230, 53, 0.3)';">
+                                Contact Me
+                            </a>
+                            <a href="https://github.com/hansraj1999/EphemeralChat" target="_blank" rel="noopener noreferrer" style="text-decoration: none; display: inline-block; padding: 0.4rem 0.9rem; background: transparent; color: var(--primary-color); border: 1px solid var(--primary-color); border-radius: 8px; font-size: 0.8rem; font-weight: 500; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(163, 230, 53, 0.2);" onmouseover="this.style.background='rgba(163, 230, 53, 0.1)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 0 15px rgba(163, 230, 53, 0.3)';" onmouseout="this.style.background='transparent'; this.style.transform='translateY(0)'; this.style.boxShadow='0 0 10px rgba(163, 230, 53, 0.2)';">
+                                View on GitHub
+                            </a>
+                            <a href="https://www.linkedin.com/in/hansraj-deghun" target="_blank" rel="noopener noreferrer" style="text-decoration: none; display: inline-block; padding: 0.4rem 0.9rem; background: transparent; color: var(--primary-color); border: 1px solid var(--primary-color); border-radius: 8px; font-size: 0.8rem; font-weight: 500; transition: all 0.3s ease; box-shadow: 0 0 10px rgba(163, 230, 53, 0.2);" onmouseover="this.style.background='rgba(163, 230, 53, 0.1)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 0 15px rgba(163, 230, 53, 0.3)';" onmouseout="this.style.background='transparent'; this.style.transform='translateY(0)'; this.style.boxShadow='0 0 10px rgba(163, 230, 53, 0.2)';">
+                                Connect on LinkedIn
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="demo-section">
+                <h2>Live Demo - Try It Out</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    Experience EphemeralChat in real-time. Create or join a chat room and start messaging. Rooms automatically expire after the set time.
+                </p>
+                
+                <div style="background: rgba(163, 230, 53, 0.1); border: 1px solid var(--primary-color); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; box-shadow: 0 0 10px rgba(163, 230, 53, 0.2);">
+                    <strong style="color: var(--primary-color);">⏱️ Please Note:</strong> This service runs on Cloud Run and may take 10-30 seconds to boot up if the instance is cold. The first request after inactivity can be slower as the container needs to start. Subsequent requests will be much faster!
+                </div>
+                
+                <!-- Room Creation/Join Section -->
+                <div id="room-setup-section">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                        <!-- Create Room -->
+                        <div style="background: #0a0a0a; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem;">
+                            <h3 style="color: var(--primary-color); margin-bottom: 1rem; font-size: 1.25rem;">Create Room</h3>
+                            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                <div>
+                                    <label style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">Room Name</label>
+                                    <input type="text" id="room-name-input" class="url-input" placeholder="My Chat Room" style="width: 100%;">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">Expiry (seconds)</label>
+                                    <input type="number" id="room-expiry-input" class="url-input" value="600" min="60" max="3600" style="width: 100%;">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">Max Users</label>
+                                    <input type="number" id="room-max-users-input" class="url-input" value="20" min="2" max="100" style="width: 100%;">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">Your Name (optional)</label>
+                                    <input type="text" id="create-user-name-input" class="url-input" placeholder="Leave empty for a random funny name" style="width: 100%;">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">Password (optional)</label>
+                                    <input type="password" id="room-password-input" class="url-input" placeholder="Leave empty for no password" style="width: 100%;">
+                                </div>
+                                <button id="create-room-btn" class="demo-btn" style="width: 100%;">Create Room</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Join Room -->
+                        <div style="background: #0a0a0a; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem;">
+                            <h3 style="color: var(--primary-color); margin-bottom: 1rem; font-size: 1.25rem;">Join Room</h3>
+                            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                <div>
+                                    <label style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">Your Name</label>
+                                    <input type="text" id="join-user-name-input" class="url-input" placeholder="Leave empty for a random funny name" style="width: 100%;">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">Room ID</label>
+                                    <input type="text" id="join-room-id-input" class="url-input" placeholder="Enter room ID" style="width: 100%;">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">Password (if required)</label>
+                                    <input type="password" id="join-room-password-input" class="url-input" placeholder="Enter password" style="width: 100%;">
+                                </div>
+                                <button id="join-room-btn" class="demo-btn" style="width: 100%; background: transparent; color: var(--primary-color); border-color: var(--primary-color);">Join Room</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chat Interface (hidden until room is joined) -->
+                <div id="chat-interface-section" style="display: none;">
+                    <div style="background: #0a0a0a; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <div>
+                                <h3 style="color: var(--primary-color); margin-bottom: 0.5rem; font-size: 1.25rem;" id="current-room-name">Room: -</h3>
+                                <p style="color: var(--text-secondary); font-size: 0.875rem;" id="current-room-id">Room ID: -</p>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.5rem;">
+                                    <span id="online-count">0</span> online
+                                </div>
+                                <button id="leave-room-btn" class="demo-btn" style="padding: 0.5rem 1rem; font-size: 0.875rem; background: transparent; color: var(--primary-color); border-color: var(--primary-color);">Leave Room</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Online Members -->
+                        <div id="online-members-container" style="margin-bottom: 1rem; padding: 1rem; background: rgba(163, 230, 53, 0.05); border-radius: 8px; border: 1px solid var(--border-color);">
+                            <h4 style="color: var(--primary-color); font-size: 0.875rem; margin-bottom: 0.5rem;">Online Members</h4>
+                            <div id="online-members-list" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                                <span style="color: var(--text-secondary); font-size: 0.875rem;">No members online</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Chat Messages -->
+                        <div id="chat-messages-container" style="height: 400px; overflow-y: auto; background: #000000; border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                            <div style="color: var(--text-secondary); text-align: center; font-size: 0.875rem; padding: 2rem;">
+                                No messages yet. Start the conversation!
+                            </div>
+                        </div>
+                        
+                        <!-- Message Input -->
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="message-input" class="url-input" placeholder="Type your message..." style="flex: 1;" onkeypress="if(event.key === 'Enter') sendMessage();">
+                            <button id="send-message-btn" class="demo-btn">Send</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -402,11 +799,6 @@
     <!-- Technology Stack & Architecture Section -->
     <section class="shorturl-demo" style="padding-top: 0;">
         <div class="demo-container">
-            <div style="margin-bottom: 1rem;">
-                <a href="/#projects" style="color: var(--primary-color); text-decoration: none; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.3s ease; padding: 0.3rem 0.7rem; border-radius: 8px; background: rgba(163, 230, 53, 0.1); border: 1px solid var(--primary-color);" onmouseover="this.style.background='rgba(163, 230, 53, 0.2)'; this.style.transform='translateX(-5px)';" onmouseout="this.style.background='rgba(163, 230, 53, 0.1)'; this.style.transform='translateX(0)'">
-                    ← Back to Portfolio
-                </a>
-            </div>
             <div class="demo-section">
                 <h2>Technology Stack & Architecture</h2>
                 <p style="color: var(--text-secondary); margin-bottom: 2rem;">
@@ -456,12 +848,11 @@
                 
                 <!-- Architecture Diagram Image -->
                 <div style="text-align: center; margin: 2rem 0;">
-                    <img 
-                        src="https://via.placeholder.com/800x400/0a0a0a/a3e635?text=EphemeralChat+Architecture+Diagram" 
-                        alt="EphemeralChat System Architecture Diagram"
-                        class="architecture-diagram"
-                        onerror="this.style.display='none'"
-                    >
+                    <!-- Architecture diagram placeholder - can be replaced with actual diagram -->
+                    <div style="background: #0a0a0a; border: 2px solid var(--border-color); border-radius: 12px; padding: 3rem; text-align: center; color: var(--text-secondary);">
+                        <p style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--primary-color);">EphemeralChat Architecture</p>
+                        <p style="font-size: 0.875rem;">Architecture diagram showing Redis pub/sub, WebSocket connections, and horizontal scaling</p>
+                    </div>
                 </div>
                 
                 <div class="architecture-grid">
@@ -642,6 +1033,7 @@
   -H 'content-type: application/json' \
   -d '{
   "name": "My Chat Room",
+  "owner_name": "JohnDoe",
   "expiry_seconds": 600,
   "max_users": 20,
   "password": "optional_password"
@@ -689,6 +1081,7 @@ const createRoom = async () => {
     },
     body: JSON.stringify({
       name: 'My Chat Room',
+      owner_name: 'JohnDoe',
       expiry_seconds: 600,
       max_users: 20
     })
@@ -753,6 +1146,645 @@ ws.onmessage = (event) => {
             }
         })();
         
+        // EphemeralChat Demo Script
+        const EPHEMERALCHAT_API_BASE = 'https://ephemeralchat.hansraj.me';
+        let currentWebSocket = null;
+        let currentRoomId = null;
+        let currentRoomName = null;
+        let connectionId = null;
+        let onlineMembers = new Map(); // Map of userId -> {name, connectionId, joinedAt}
+        let currentUserName = null;
+        
+        // Funny name generator
+        const funnyNames = [
+            'happyfox', 'agent49', 'cyberpilot', 'quantumleap', 'neonwave', 'shadowfox',
+            'stardust', 'thunderbolt', 'silverhawk', 'mysticowl', 'cosmiccat', 'digitalninja',
+            'phantomwolf', 'crystalball', 'nebulaknight', 'galacticguru', 'starlight', 'moonshine',
+            'aurorabear', 'cosmiccow', 'quantumquokka', 'neonnewt', 'cyberchipmunk', 'digitaldolphin'
+        ];
+        
+        function generateFunnyName() {
+            const randomIndex = Math.floor(Math.random() * funnyNames.length);
+            const randomNumber = Math.floor(Math.random() * 100);
+            return `${funnyNames[randomIndex]}${randomNumber}`;
+        }
+        
+        // DOM elements
+        const createRoomBtn = document.getElementById('create-room-btn');
+        const joinRoomBtn = document.getElementById('join-room-btn');
+        const leaveRoomBtn = document.getElementById('leave-room-btn');
+        const sendMessageBtn = document.getElementById('send-message-btn');
+        const messageInput = document.getElementById('message-input');
+        const roomSetupSection = document.getElementById('room-setup-section');
+        const chatInterfaceSection = document.getElementById('chat-interface-section');
+        const chatMessagesContainer = document.getElementById('chat-messages-container');
+        const onlineMembersList = document.getElementById('online-members-list');
+        const onlineCount = document.getElementById('online-count');
+        
+        if (createRoomBtn) {
+            // Create room
+            createRoomBtn.addEventListener('click', async () => {
+                // Get user name or generate a funny one
+                const userNameInput = document.getElementById('create-user-name-input');
+                currentUserName = userNameInput ? userNameInput.value.trim() : '';
+                if (!currentUserName) {
+                    currentUserName = generateFunnyName();
+                }
+                
+                const name = document.getElementById('room-name-input').value.trim() || 'Chat Room';
+                const expiry = parseInt(document.getElementById('room-expiry-input').value) || 600;
+                const maxUsers = parseInt(document.getElementById('room-max-users-input').value) || 20;
+                const password = document.getElementById('room-password-input').value.trim() || null;
+                
+                createRoomBtn.disabled = true;
+                createRoomBtn.textContent = 'Creating...';
+                
+                try {
+                    const response = await fetch(`${EPHEMERALCHAT_API_BASE}/rooms/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            name: name,
+                            owner_name: currentUserName,
+                            expiry_seconds: expiry,
+                            max_users: maxUsers,
+                            password: password
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok && data.room_id) {
+                        currentRoomId = data.room_id;
+                        currentRoomName = name;
+                        // Reset button state immediately
+                        createRoomBtn.disabled = false;
+                        createRoomBtn.textContent = 'Create Room';
+                        // Determine WebSocket URL - use wss:// for HTTPS pages
+                        const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                        const wsUrl = data.ws_url || `${wsProtocol}//${EPHEMERALCHAT_API_BASE.replace(/^https?:\/\//, '')}/rooms/${data.room_id}/ws`;
+                        showSuccessPopup('Room Created Successfully!', {
+                            room_id: data.room_id,
+                            ws_url: wsUrl,
+                            expires_at: data.expires_at || 'N/A'
+                        });
+                        // Connect WebSocket immediately - chat will open automatically
+                        connectWebSocket(data.room_id, password).catch(error => {
+                            console.error('WebSocket connection error:', error);
+                            showChatMessage('System', `Connection error: ${error.message}`, 'error');
+                        });
+                    } else {
+                        showChatMessage('System', `Error: ${data.detail || 'Failed to create room'}`, 'error');
+                        createRoomBtn.disabled = false;
+                        createRoomBtn.textContent = 'Create Room';
+                    }
+                } catch (error) {
+                    showChatMessage('System', `Error: ${error.message}`, 'error');
+                    createRoomBtn.disabled = false;
+                    createRoomBtn.textContent = 'Create Room';
+                }
+            });
+        }
+        
+        if (joinRoomBtn) {
+            // Join room
+            joinRoomBtn.addEventListener('click', async () => {
+                // Get user name or generate a funny one
+                const userNameInput = document.getElementById('join-user-name-input');
+                currentUserName = userNameInput ? userNameInput.value.trim() : '';
+                if (!currentUserName) {
+                    currentUserName = generateFunnyName();
+                }
+                
+                const roomId = document.getElementById('join-room-id-input').value.trim();
+                const password = document.getElementById('join-room-password-input').value.trim() || null;
+                
+                if (!roomId) {
+                    showChatMessage('System', 'Please enter a room ID', 'error');
+                    return;
+                }
+                
+                joinRoomBtn.disabled = true;
+                joinRoomBtn.textContent = 'Joining...';
+                
+                try {
+                    currentRoomId = roomId;
+                    // Reset button state
+                    joinRoomBtn.disabled = false;
+                    joinRoomBtn.textContent = 'Join Room';
+                    
+                    // Try to get room info first
+                    try {
+                        const infoResponse = await fetch(`${EPHEMERALCHAT_API_BASE}/rooms/${roomId}`);
+                        if (infoResponse.ok) {
+                            const roomInfo = await infoResponse.json();
+                            currentRoomName = roomInfo.name || 'Chat Room';
+                            showSuccessPopup('Room Joined Successfully!', {
+                                room_id: roomId,
+                                room_name: roomInfo.name || 'Chat Room',
+                                expires_at: roomInfo.expires_at || 'N/A'
+                            });
+                        } else {
+                            // Room might not exist or other error, but try to connect anyway
+                            showSuccessPopup('Connecting to Room...', {
+                                room_id: roomId
+                            });
+                        }
+                    } catch (e) {
+                        // If we can't get room info, just show a connecting message
+                        showSuccessPopup('Connecting to Room...', {
+                            room_id: roomId
+                        });
+                    }
+                    // Connect WebSocket immediately - chat will open automatically when connected
+                    connectWebSocket(roomId, password).catch(error => {
+                        console.error('WebSocket connection error:', error);
+                        showChatMessage('System', `Connection error: ${error.message}`, 'error');
+                        // Reset button on error
+                        joinRoomBtn.disabled = false;
+                        joinRoomBtn.textContent = 'Join Room';
+                    });
+                } catch (error) {
+                    showChatMessage('System', `Error: ${error.message}`, 'error');
+                    joinRoomBtn.disabled = false;
+                    joinRoomBtn.textContent = 'Join Room';
+                }
+            });
+        }
+        
+        // Connect WebSocket
+        async function connectWebSocket(roomId, password) {
+            try {
+                // Always use wss:// for production (HTTPS requires secure WebSocket)
+                // Use ws:// only for localhost development
+                const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                const wsProtocol = (window.location.protocol === 'https:' || !isLocalhost) ? 'wss:' : 'ws:';
+                const apiHost = EPHEMERALCHAT_API_BASE.replace(/^https?:\/\//, '');
+                const wsUrl = `${wsProtocol}//${apiHost}/rooms/${roomId}/ws`;
+                
+                console.log('Connecting to WebSocket:', wsUrl);
+                currentWebSocket = new WebSocket(wsUrl);
+                
+                currentWebSocket.onopen = () => {
+                    connectionId = crypto.randomUUID();
+                    console.log('WebSocket connected successfully');
+                    // Ensure we have a user name
+                    if (!currentUserName) {
+                        currentUserName = generateFunnyName();
+                    }
+                    // Add current user to online members
+                    onlineMembers.set(connectionId, {
+                        name: currentUserName,
+                        connectionId: connectionId,
+                        joinedAt: new Date()
+                    });
+                    updateOnlineMembers();
+                    // Send user name to server for presence tracking
+                    try {
+                        currentWebSocket.send(JSON.stringify({
+                            type: 'user_joined',
+                            sender: currentUserName,
+                            connection_id: connectionId,
+                            user_name: currentUserName
+                        }));
+                    } catch (error) {
+                        console.error('Failed to send user_joined message:', error);
+                    }
+                    // Close the success popup first
+                    closeSuccessPopup();
+                    // Hide room setup and show chat interface immediately
+                    if (roomSetupSection) roomSetupSection.style.display = 'none';
+                    if (chatInterfaceSection) {
+                        chatInterfaceSection.style.display = 'block';
+                        // Scroll to chat interface
+                        setTimeout(() => {
+                            chatInterfaceSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            // Focus on message input
+                            setTimeout(() => {
+                                if (messageInput) messageInput.focus();
+                            }, 300);
+                        }, 100);
+                    }
+                    const roomNameEl = document.getElementById('current-room-name');
+                    const roomIdEl = document.getElementById('current-room-id');
+                    if (roomNameEl) roomNameEl.textContent = `Room: ${currentRoomName || roomId}`;
+                    if (roomIdEl) roomIdEl.textContent = `Room ID: ${roomId}`;
+                    // Show welcome message with user name
+                    showChatMessage('System', `Connected as ${currentUserName}! You can start chatting now.`, 'success');
+                    // Button states are already reset, but ensure they're correct
+                    if (createRoomBtn) {
+                        createRoomBtn.disabled = false;
+                        createRoomBtn.textContent = 'Create Room';
+                    }
+                    if (joinRoomBtn) {
+                        joinRoomBtn.disabled = false;
+                        joinRoomBtn.textContent = 'Join Room';
+                    }
+                };
+                
+                currentWebSocket.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        
+                        if (data.type === 'message') {
+                            showChatMessage(data.sender || 'User', data.content, 'message');
+                        } else if (data.type === 'user_joined') {
+                            const userId = data.user_id || data.connection_id || data.connectionId;
+                            const userName = data.sender || data.user_name || data.name || `User${userId ? userId.substring(0, 8) : ''}`;
+                            if (userId) {
+                                onlineMembers.set(userId, {
+                                    name: userName,
+                                    connectionId: userId,
+                                    joinedAt: new Date()
+                                });
+                                updateOnlineMembers();
+                                // Only show join message if it's not the current user
+                                if (userId !== connectionId) {
+                                    showChatMessage('System', `${userName} joined the room`, 'info');
+                                }
+                            }
+                        } else if (data.type === 'user_left') {
+                            const userId = data.user_id || data.connection_id || data.connectionId;
+                            const userName = data.sender || data.user_name || data.name;
+                            if (userId) {
+                                const memberInfo = onlineMembers.get(userId);
+                                const displayName = userName || memberInfo?.name || `User${userId.substring(0, 8)}`;
+                                onlineMembers.delete(userId);
+                                updateOnlineMembers();
+                                // Only show leave message if it's not the current user
+                                if (userId !== connectionId) {
+                                    showChatMessage('System', `${displayName} left the room`, 'info');
+                                }
+                            }
+                        } else if (data.type === 'error') {
+                            showChatMessage('System', data.message || 'An error occurred', 'error');
+                        } else if (data.type === 'room_info' || data.type === 'presence_update') {
+                            // Update presence from room info or presence update
+                            if (data.members && Array.isArray(data.members)) {
+                                onlineMembers.clear();
+                                data.members.forEach(member => {
+                                    const memberId = member.id || member.connection_id || member.user_id;
+                                    const memberName = member.name || member.user_name || member.sender || `User${memberId ? memberId.substring(0, 8) : ''}`;
+                                    if (memberId) {
+                                        onlineMembers.set(memberId, {
+                                            name: memberName,
+                                            connectionId: memberId,
+                                            joinedAt: member.joined_at ? new Date(member.joined_at) : new Date()
+                                        });
+                                    }
+                                });
+                                updateOnlineMembers();
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error parsing message:', error);
+                    }
+                };
+                
+                currentWebSocket.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                    closeSuccessPopup();
+                    showChatMessage('System', 'WebSocket connection error. Please check the room ID and try again.', 'error');
+                    // Show room setup again on error
+                    if (roomSetupSection) roomSetupSection.style.display = 'block';
+                    if (chatInterfaceSection) chatInterfaceSection.style.display = 'none';
+                    // Reset button states on error
+                    if (createRoomBtn) {
+                        createRoomBtn.disabled = false;
+                        createRoomBtn.textContent = 'Create Room';
+                    }
+                    if (joinRoomBtn) {
+                        joinRoomBtn.disabled = false;
+                        joinRoomBtn.textContent = 'Join Room';
+                    }
+                };
+                
+                currentWebSocket.onclose = (event) => {
+                    console.log('WebSocket closed:', event.code, event.reason);
+                    if (event.code !== 1000) {
+                        // Abnormal close - show error and reset UI
+                        closeSuccessPopup();
+                        showChatMessage('System', `Disconnected from room: ${event.reason || 'Connection closed'}`, 'error');
+                        // Show room setup again
+                        if (roomSetupSection) roomSetupSection.style.display = 'block';
+                        if (chatInterfaceSection) chatInterfaceSection.style.display = 'none';
+                    } else {
+                        showChatMessage('System', 'Disconnected from room', 'info');
+                    }
+                    currentWebSocket = null;
+                    currentRoomId = null;
+                    onlineMembers.clear();
+                    currentUserName = null;
+                    updateOnlineMembers();
+                    // Reset button states on close
+                    if (createRoomBtn) {
+                        createRoomBtn.disabled = false;
+                        createRoomBtn.textContent = 'Create Room';
+                    }
+                    if (joinRoomBtn) {
+                        joinRoomBtn.disabled = false;
+                        joinRoomBtn.textContent = 'Join Room';
+                    }
+                };
+                
+            } catch (error) {
+                showChatMessage('System', `Connection error: ${error.message}`, 'error');
+                throw error;
+            }
+        }
+        
+        // Send message
+        function sendMessage() {
+            if (!messageInput) return;
+            const message = messageInput.value.trim();
+            if (!message || !currentWebSocket || currentWebSocket.readyState !== WebSocket.OPEN) {
+                return;
+            }
+            
+            // Ensure we have a user name
+            if (!currentUserName) {
+                currentUserName = generateFunnyName();
+            }
+            
+            try {
+                currentWebSocket.send(JSON.stringify({
+                    type: 'message',
+                    content: message,
+                    sender: currentUserName
+                }));
+                messageInput.value = '';
+            } catch (error) {
+                showChatMessage('System', `Error sending message: ${error.message}`, 'error');
+            }
+        }
+        
+        if (sendMessageBtn) {
+            sendMessageBtn.addEventListener('click', sendMessage);
+        } else {
+            console.warn('sendMessageBtn not found');
+        }
+        if (messageInput) {
+            messageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        } else {
+            console.warn('messageInput not found');
+        }
+        
+        // Leave room
+        if (leaveRoomBtn) {
+            leaveRoomBtn.addEventListener('click', () => {
+                if (currentWebSocket) {
+                    currentWebSocket.close();
+                }
+                if (roomSetupSection) roomSetupSection.style.display = 'block';
+                if (chatInterfaceSection) chatInterfaceSection.style.display = 'none';
+                if (chatMessagesContainer) {
+                    chatMessagesContainer.innerHTML = '<div style="color: var(--text-secondary); text-align: center; font-size: 0.875rem; padding: 2rem;">No messages yet. Start the conversation!</div>';
+                }
+                onlineMembers.clear();
+                currentUserName = null;
+                updateOnlineMembers();
+            });
+        }
+        
+        // Show chat message
+        function showChatMessage(sender, content, type = 'message') {
+            if (!chatMessagesContainer) return;
+            const messageDiv = document.createElement('div');
+            messageDiv.style.cssText = 'padding: 0.75rem; background: #0a0a0a; border-radius: 8px; border: 1px solid var(--border-color);';
+            
+            const senderSpan = document.createElement('span');
+            senderSpan.style.cssText = 'color: var(--primary-color); font-weight: 600; margin-right: 0.5rem;';
+            senderSpan.textContent = sender + ':';
+            
+            const contentSpan = document.createElement('span');
+            contentSpan.style.cssText = 'color: var(--text-color);';
+            contentSpan.textContent = content;
+            
+            if (type === 'error') {
+                messageDiv.style.borderColor = '#ff4444';
+                contentSpan.style.color = '#ff4444';
+            } else if (type === 'success') {
+                messageDiv.style.borderColor = 'var(--primary-color)';
+            } else if (type === 'info') {
+                contentSpan.style.color = 'var(--text-secondary)';
+                senderSpan.style.color = 'var(--text-secondary)';
+            }
+            
+            messageDiv.appendChild(senderSpan);
+            messageDiv.appendChild(contentSpan);
+            
+            // Remove placeholder if exists
+            const placeholder = chatMessagesContainer.querySelector('div[style*="text-align: center"]');
+            if (placeholder) {
+                placeholder.remove();
+            }
+            
+            chatMessagesContainer.appendChild(messageDiv);
+            chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+        }
+        
+        // Show success popup
+        function showSuccessPopup(title, details) {
+            // Remove existing popup if any
+            const existingPopup = document.getElementById('success-popup');
+            const existingOverlay = document.getElementById('popup-overlay');
+            if (existingPopup) existingPopup.remove();
+            if (existingOverlay) existingOverlay.remove();
+            
+            // Create overlay
+            const overlay = document.createElement('div');
+            overlay.id = 'popup-overlay';
+            overlay.className = 'popup-overlay';
+            overlay.onclick = closeSuccessPopup;
+            
+            // Create popup
+            const popup = document.createElement('div');
+            popup.id = 'success-popup';
+            popup.className = 'success-popup';
+            
+            let popupHTML = `
+                <div class="popup-header">${title}</div>
+                <div class="popup-content">
+            `;
+            
+            if (details.room_id) {
+                popupHTML += `
+                    <div class="popup-detail">
+                        <div class="popup-detail-label">Room ID</div>
+                        <div class="popup-detail-value" id="popup-room-id">${details.room_id}</div>
+                    </div>
+                `;
+            }
+            
+            if (details.ws_url) {
+                popupHTML += `
+                    <div class="popup-detail">
+                        <div class="popup-detail-label">WebSocket URL</div>
+                        <div class="popup-detail-value" id="popup-ws-url">${details.ws_url}</div>
+                    </div>
+                `;
+            }
+            
+            if (details.room_name) {
+                popupHTML += `
+                    <div class="popup-detail">
+                        <div class="popup-detail-label">Room Name</div>
+                        <div class="popup-detail-value">${details.room_name}</div>
+                    </div>
+                `;
+            }
+            
+            if (details.expires_at) {
+                const expiryDate = new Date(details.expires_at);
+                const formattedDate = expiryDate.toLocaleString();
+                popupHTML += `
+                    <div class="popup-detail">
+                        <div class="popup-detail-label">Expires At</div>
+                        <div class="popup-detail-value">${formattedDate}</div>
+                    </div>
+                `;
+            }
+            
+            popupHTML += `
+                </div>
+                <div class="popup-actions">
+                    ${details.room_id ? `<button class="popup-copy-btn" data-copy-text="${details.room_id}" data-copy-label="Room ID">Copy Room ID</button>` : ''}
+                    ${details.ws_url ? `<button class="popup-copy-btn" data-copy-text="${details.ws_url}" data-copy-label="WebSocket URL">Copy WS URL</button>` : ''}
+                    <button class="popup-close-btn" onclick="closeSuccessPopup()">Close</button>
+                </div>
+            `;
+            
+            popup.innerHTML = popupHTML;
+            
+            // Add event listeners to copy buttons
+            const copyButtons = popup.querySelectorAll('.popup-copy-btn');
+            copyButtons.forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const textToCopy = this.getAttribute('data-copy-text');
+                    const label = this.getAttribute('data-copy-label');
+                    await copyToClipboard(textToCopy, label, this);
+                });
+            });
+            
+            document.body.appendChild(overlay);
+            document.body.appendChild(popup);
+        }
+        
+        // Close success popup
+        function closeSuccessPopup() {
+            const popup = document.getElementById('success-popup');
+            const overlay = document.getElementById('popup-overlay');
+            if (popup) popup.remove();
+            if (overlay) overlay.remove();
+        }
+        
+        // Copy to clipboard helper
+        async function copyToClipboard(text, label, buttonElement) {
+            try {
+                await navigator.clipboard.writeText(text);
+                const originalText = buttonElement.textContent;
+                buttonElement.textContent = 'Copied!';
+                buttonElement.style.background = 'var(--primary-color)';
+                buttonElement.style.color = '#000000';
+                buttonElement.style.borderColor = 'var(--primary-color)';
+                setTimeout(() => {
+                    buttonElement.textContent = originalText;
+                    buttonElement.style.background = '';
+                    buttonElement.style.color = '';
+                    buttonElement.style.borderColor = '';
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy:', err);
+                // Fallback for older browsers
+                try {
+                    const textArea = document.createElement('textarea');
+                    textArea.value = text;
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-999999px';
+                    textArea.style.top = '-999999px';
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    const successful = document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    
+                    if (successful) {
+                        const originalText = buttonElement.textContent;
+                        buttonElement.textContent = 'Copied!';
+                        buttonElement.style.background = 'var(--primary-color)';
+                        buttonElement.style.color = '#000000';
+                        setTimeout(() => {
+                            buttonElement.textContent = originalText;
+                            buttonElement.style.background = '';
+                            buttonElement.style.color = '';
+                        }, 2000);
+                    } else {
+                        alert(`Failed to copy ${label}. Please copy manually: ${text}`);
+                    }
+                } catch (fallbackErr) {
+                    alert(`Failed to copy ${label}. Please copy manually: ${text}`);
+                }
+            }
+        }
+        
+        // Update online members with real-time presence
+        function updateOnlineMembers() {
+            if (!onlineCount || !onlineMembersList) return;
+            onlineCount.textContent = `${onlineMembers.size} online`;
+            
+            if (onlineMembers.size === 0) {
+                onlineMembersList.innerHTML = '<span style="color: var(--text-secondary); font-size: 0.875rem;">No members online</span>';
+            } else {
+                onlineMembersList.innerHTML = '';
+                onlineMembers.forEach((memberInfo, memberId) => {
+                    const memberSpan = document.createElement('span');
+                    memberSpan.style.cssText = 'padding: 0.25rem 0.75rem; background: rgba(163, 230, 53, 0.1); border: 1px solid var(--primary-color); border-radius: 20px; color: var(--primary-color); font-size: 0.875rem; display: inline-flex; align-items: center; gap: 0.5rem;';
+                    
+                    // Add online indicator dot
+                    const indicator = document.createElement('span');
+                    indicator.style.cssText = 'width: 8px; height: 8px; background: var(--primary-color); border-radius: 50%; display: inline-block; animation: pulse 2s infinite;';
+                    memberSpan.appendChild(indicator);
+                    
+                    // Add user name
+                    const nameSpan = document.createElement('span');
+                    nameSpan.textContent = memberInfo.name || `User${memberId.substring(0, 8)}`;
+                    // Highlight current user
+                    if (memberId === connectionId) {
+                        nameSpan.style.fontWeight = '600';
+                        nameSpan.textContent += ' (You)';
+                    }
+                    memberSpan.appendChild(nameSpan);
+                    
+                    onlineMembersList.appendChild(memberSpan);
+                });
+            }
+        }
+        
+        // Add pulse animation for online indicator
+        if (!document.getElementById('presence-styles')) {
+            const style = document.createElement('style');
+            style.id = 'presence-styles';
+            style.textContent = `
+                @keyframes pulse {
+                    0%, 100% {
+                        opacity: 1;
+                        transform: scale(1);
+                    }
+                    50% {
+                        opacity: 0.5;
+                        transform: scale(0.8);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
         // Copy code to clipboard function
         window.copyCodeToClipboard = async function(elementId) {
             const codeElement = document.getElementById(elementId);
@@ -780,18 +1812,27 @@ ws.onmessage = (event) => {
         };
         
         // Smooth scroll for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
+        try {
+            const anchorLinks = document.querySelectorAll('a[href^="#"]');
+            if (anchorLinks && anchorLinks.length > 0) {
+                anchorLinks.forEach(anchor => {
+                    if (anchor) {
+                        anchor.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            const target = document.querySelector(this.getAttribute('href'));
+                            if (target) {
+                                target.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'start'
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        } catch (error) {
+            console.warn('Error setting up smooth scroll:', error);
+        }
         
         // Navbar scroll effect
         window.addEventListener('scroll', () => {
