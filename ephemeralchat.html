@@ -1305,11 +1305,54 @@ ws.onmessage = (event) => {
                     joinRoomBtn.disabled = false;
                     joinRoomBtn.textContent = 'Join Room';
                     
-                    // Try to get room info first
+                    // Try to get room info first with retry logic
+                    let roomInfo = null;
+                    let roomNotFound = false;
+                    
                     try {
-                        const infoResponse = await fetch(`${EPHEMERALCHAT_API_BASE}/rooms/${roomId}`);
-                        if (infoResponse.ok) {
-                            const roomInfo = await infoResponse.json();
+                        const result = await retryWithBackoff(async () => {
+                            // Create timeout abort controller for browser compatibility
+                            const controller = new AbortController();
+                            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+                            
+                            try {
+                                const infoResponse = await fetch(`${EPHEMERALCHAT_API_BASE}/rooms/${roomId}`, {
+                                    signal: controller.signal
+                                });
+                                clearTimeout(timeoutId);
+                                
+                                // Handle 404 - room doesn't exist
+                                if (infoResponse.status === 404) {
+                                    return { notFound: true, data: null };
+                                }
+                                
+                                if (!infoResponse.ok) {
+                                    throw new Error(`HTTP ${infoResponse.status}: ${infoResponse.statusText}`);
+                                }
+                                
+                                return { notFound: false, data: await infoResponse.json() };
+                            } catch (error) {
+                                clearTimeout(timeoutId);
+                                if (error.name === 'AbortError') {
+                                    throw new Error('Request timeout - service may be starting up');
+                                }
+                                throw error;
+                            }
+                        }, 3, 2000, 10000);
+                        
+                        roomNotFound = result.notFound;
+                        roomInfo = result.data;
+                        
+                        // Check if room was not found (404)
+                        if (roomNotFound) {
+                            closeSuccessPopup();
+                            showChatMessage('System', `Room "${roomId}" not found. The room may have expired or the room ID is incorrect.`, 'error');
+                            joinRoomBtn.disabled = false;
+                            joinRoomBtn.textContent = 'Join Room';
+                            return; // Don't proceed with WebSocket connection
+                        }
+                        
+                        if (roomInfo) {
                             currentRoomName = roomInfo.name || 'Chat Room';
                             showSuccessPopup('Room Joined Successfully!', {
                                 room_id: roomId,
@@ -1317,25 +1360,38 @@ ws.onmessage = (event) => {
                                 expires_at: roomInfo.expires_at || 'N/A'
                             });
                         } else {
-                            // Room might not exist or other error, but try to connect anyway
+                            // If we got here without roomNotFound flag, try to connect anyway
                             showSuccessPopup('Connecting to Room...', {
                                 room_id: roomId
                             });
                         }
                     } catch (e) {
-                        // If we can't get room info, just show a connecting message
+                        // If we can't get room info after retries, check if it was a 404
+                        if (roomNotFound) {
+                            closeSuccessPopup();
+                            showChatMessage('System', `Room "${roomId}" not found. The room may have expired or the room ID is incorrect.`, 'error');
+                            joinRoomBtn.disabled = false;
+                            joinRoomBtn.textContent = 'Join Room';
+                            return; // Don't proceed with WebSocket connection
+                        }
+                        // For other errors, try to connect anyway (might be temporary server issue)
+                        console.log('Could not fetch room info after retries, proceeding with connection:', e);
                         showSuccessPopup('Connecting to Room...', {
                             room_id: roomId
                         });
                     }
-                    // Connect WebSocket immediately - chat will open automatically when connected
-                    connectWebSocket(roomId, password).catch(error => {
-                        console.error('WebSocket connection error:', error);
-                        showChatMessage('System', `Connection error: ${error.message}`, 'error');
-                        // Reset button on error
-                        joinRoomBtn.disabled = false;
-                        joinRoomBtn.textContent = 'Join Room';
-                    });
+                    
+                    // Connect WebSocket only if room exists or we couldn't verify
+                    if (!roomNotFound) {
+                        connectWebSocket(roomId, password).catch(error => {
+                            console.error('WebSocket connection error:', error);
+                            closeSuccessPopup();
+                            showChatMessage('System', `Connection error: ${error.message}`, 'error');
+                            // Reset button on error
+                            joinRoomBtn.disabled = false;
+                            joinRoomBtn.textContent = 'Join Room';
+                        });
+                    }
                 } catch (error) {
                     showChatMessage('System', `Error: ${error.message}`, 'error');
                     joinRoomBtn.disabled = false;
@@ -1344,8 +1400,26 @@ ws.onmessage = (event) => {
             });
         }
         
-        // Connect WebSocket
-        async function connectWebSocket(roomId, password) {
+        // Retry helper function with exponential backoff
+        async function retryWithBackoff(fn, maxRetries = 3, initialDelay = 1000, maxDelay = 10000) {
+            let lastError;
+            for (let attempt = 0; attempt <= maxRetries; attempt++) {
+                try {
+                    return await fn();
+                } catch (error) {
+                    lastError = error;
+                    if (attempt < maxRetries) {
+                        const delay = Math.min(initialDelay * Math.pow(2, attempt), maxDelay);
+                        console.log(`Attempt ${attempt + 1} failed, retrying in ${delay}ms...`, error.message);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    }
+                }
+            }
+            throw lastError;
+        }
+        
+        // Connect WebSocket with retry logic
+        async function connectWebSocket(roomId, password, retryCount = 0, maxRetries = 3) {
             try {
                 // Close any existing WebSocket connection before creating a new one
                 if (currentWebSocket) {
@@ -1367,66 +1441,129 @@ ws.onmessage = (event) => {
                 const apiHost = EPHEMERALCHAT_API_BASE.replace(/^https?:\/\//, '');
                 const wsUrl = `${wsProtocol}//${apiHost}/rooms/${roomId}/ws`;
                 
-                console.log('Connecting to WebSocket:', wsUrl);
-                currentWebSocket = new WebSocket(wsUrl);
+                console.log(`Connecting to WebSocket (attempt ${retryCount + 1}/${maxRetries + 1}):`, wsUrl);
                 
-                currentWebSocket.onopen = () => {
-                    connectionId = crypto.randomUUID();
-                    console.log('WebSocket connected successfully, connectionId:', connectionId);
-                    // Ensure we have a user name
-                    if (!currentUserName) {
-                        currentUserName = generateFunnyName();
-                    }
-                    // Don't add current user here - wait for server to send presence/user_joined event
-                    // This ensures we use the server's connection_id
-                    console.log('Current user:', currentUserName, 'Waiting for server presence update');
-                    // Send user name to server for presence tracking
-                    try {
-                        currentWebSocket.send(JSON.stringify({
-                            type: 'user_joined',
-                            sender: currentUserName,
-                            connection_id: connectionId,
-                            user_name: currentUserName
-                        }));
-                        // Request current room members/presence info
-                        currentWebSocket.send(JSON.stringify({
-                            type: 'get_presence',
-                            room_id: roomId
-                        }));
-                    } catch (error) {
-                        console.error('Failed to send user_joined message:', error);
-                    }
-                    // Close the success popup first
-                    closeSuccessPopup();
-                    // Hide room setup and show chat interface immediately
-                    if (roomSetupSection) roomSetupSection.style.display = 'none';
-                    if (chatInterfaceSection) {
-                        chatInterfaceSection.style.display = 'block';
-                        // Scroll to chat interface
-                        setTimeout(() => {
-                            chatInterfaceSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            // Focus on message input
+                return new Promise((resolve, reject) => {
+                    const ws = new WebSocket(wsUrl);
+                    let connectionTimeout;
+                    const CONNECTION_TIMEOUT = 35000; // 35 seconds for Cloud Run cold start
+                    
+                    // Set connection timeout
+                    connectionTimeout = setTimeout(() => {
+                        if (ws.readyState === WebSocket.CONNECTING) {
+                            ws.close();
+                            if (retryCount < maxRetries) {
+                                console.log(`Connection timeout, retrying... (${retryCount + 1}/${maxRetries})`);
+                                const delay = Math.min(2000 * Math.pow(2, retryCount), 10000);
+                                setTimeout(() => {
+                                    connectWebSocket(roomId, password, retryCount + 1, maxRetries)
+                                        .then(resolve)
+                                        .catch(reject);
+                                }, delay);
+                            } else {
+                                reject(new Error('Connection timeout after multiple retries. The service may be starting up. Please try again in a few moments.'));
+                            }
+                        }
+                    }, CONNECTION_TIMEOUT);
+                    
+                    ws.onopen = () => {
+                        clearTimeout(connectionTimeout);
+                        currentWebSocket = ws;
+                        // Set up all handlers now that connection is established
+                        setupWebSocketHandlers(ws, roomId);
+                        // Execute connection logic immediately since WebSocket is already open
+                        handleWebSocketOpen(ws, roomId);
+                        resolve(ws);
+                    };
+                    
+                    ws.onerror = (error) => {
+                        clearTimeout(connectionTimeout);
+                        if (retryCount < maxRetries) {
+                            console.log(`WebSocket error, retrying... (${retryCount + 1}/${maxRetries})`);
+                            const delay = Math.min(2000 * Math.pow(2, retryCount), 10000);
                             setTimeout(() => {
-                                if (messageInput) messageInput.focus();
-                            }, 300);
-                        }, 100);
-                    }
-                    const roomNameEl = document.getElementById('current-room-name');
-                    const roomIdEl = document.getElementById('current-room-id');
-                    if (roomNameEl) roomNameEl.textContent = `Room: ${currentRoomName || roomId}`;
-                    if (roomIdEl) roomIdEl.textContent = `Room ID: ${roomId}`;
-                    // Show welcome message with user name
-                    showChatMessage('System', `Connected as ${currentUserName}! You can start chatting now.`, 'success');
-                    // Button states are already reset, but ensure they're correct
-                    if (createRoomBtn) {
-                        createRoomBtn.disabled = false;
-                        createRoomBtn.textContent = 'Create Room';
-                    }
-                    if (joinRoomBtn) {
-                        joinRoomBtn.disabled = false;
-                        joinRoomBtn.textContent = 'Join Room';
-                    }
-                };
+                                connectWebSocket(roomId, password, retryCount + 1, maxRetries)
+                                    .then(resolve)
+                                    .catch(reject);
+                            }, delay);
+                        } else {
+                            reject(new Error('Failed to connect after multiple retries. The service may be starting up. Please try again.'));
+                        }
+                    };
+                });
+            } catch (error) {
+                if (retryCount < maxRetries) {
+                    const delay = Math.min(2000 * Math.pow(2, retryCount), 10000);
+                    console.log(`Error connecting, retrying in ${delay}ms... (${retryCount + 1}/${maxRetries})`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    return connectWebSocket(roomId, password, retryCount + 1, maxRetries);
+                }
+                throw error;
+            }
+        }
+        
+        // Handle WebSocket open event (called when connection is established)
+        function handleWebSocketOpen(ws, roomId) {
+            connectionId = crypto.randomUUID();
+            console.log('WebSocket connected successfully, connectionId:', connectionId);
+            // Ensure we have a user name
+            if (!currentUserName) {
+                currentUserName = generateFunnyName();
+            }
+            // Don't add current user here - wait for server to send presence/user_joined event
+            // This ensures we use the server's connection_id
+            console.log('Current user:', currentUserName, 'Waiting for server presence update');
+            // Send user name to server for presence tracking
+            try {
+                ws.send(JSON.stringify({
+                    type: 'user_joined',
+                    sender: currentUserName,
+                    connection_id: connectionId,
+                    user_name: currentUserName
+                }));
+                // Request current room members/presence info
+                ws.send(JSON.stringify({
+                    type: 'get_presence',
+                    room_id: roomId
+                }));
+            } catch (error) {
+                console.error('Failed to send user_joined message:', error);
+            }
+            // Close the success popup first
+            closeSuccessPopup();
+            // Hide room setup and show chat interface immediately
+            if (roomSetupSection) roomSetupSection.style.display = 'none';
+            if (chatInterfaceSection) {
+                chatInterfaceSection.style.display = 'block';
+                // Scroll to chat interface
+                setTimeout(() => {
+                    chatInterfaceSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Focus on message input
+                    setTimeout(() => {
+                        if (messageInput) messageInput.focus();
+                    }, 300);
+                }, 100);
+            }
+            const roomNameEl = document.getElementById('current-room-name');
+            const roomIdEl = document.getElementById('current-room-id');
+            if (roomNameEl) roomNameEl.textContent = `Room: ${currentRoomName || roomId}`;
+            if (roomIdEl) roomIdEl.textContent = `Room ID: ${roomId}`;
+            // Show welcome message with user name
+            showChatMessage('System', `Connected as ${currentUserName}! You can start chatting now.`, 'success');
+            // Button states are already reset, but ensure they're correct
+            if (createRoomBtn) {
+                createRoomBtn.disabled = false;
+                createRoomBtn.textContent = 'Create Room';
+            }
+            if (joinRoomBtn) {
+                joinRoomBtn.disabled = false;
+                joinRoomBtn.textContent = 'Join Room';
+            }
+        }
+        
+        // Setup WebSocket event handlers (onmessage, onerror, onclose)
+        function setupWebSocketHandlers(ws, roomId) {
+            currentWebSocket = ws;
                 
                 currentWebSocket.onmessage = (event) => {
                     try {
@@ -1762,11 +1899,6 @@ ws.onmessage = (event) => {
                         joinRoomBtn.textContent = 'Join Room';
                     }
                 };
-                
-            } catch (error) {
-                showChatMessage('System', `Connection error: ${error.message}`, 'error');
-                throw error;
-            }
         }
         
         // Send message
