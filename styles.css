@@ -568,7 +568,8 @@ section {
 .projects {
     overflow-x: auto;
     overflow-y: hidden;
-    padding-bottom: 1rem;
+    padding-top: 2rem;
+    padding-bottom: 3rem;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
 }

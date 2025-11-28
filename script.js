@@ -269,7 +269,6 @@ async function loadProjects() {
             const githubUrl = project.github_url || (project.url && project.url.includes('github.com') ? project.url : null);
             const demoUrlRaw = project.demo_url || project.live_url || null;
             const demoUrl = demoUrlRaw ? normalizeDemoUrl(demoUrlRaw) : null;
-            const hasDetails = project.details || project.technologies || project.features;
             
             // Store URLs as data attributes for click handling
             const redirectUrl = demoUrl || githubUrl || null;
@@ -299,38 +298,13 @@ async function loadProjects() {
                             Live Demo
                         </a>
                     ` : ''}
-                    ${hasDetails ? `
-                        <button class="project-btn project-btn-details" data-project='${JSON.stringify(project).replace(/'/g, "&#39;")}' onclick="event.stopPropagation();">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <line x1="12" y1="16" x2="12" y2="12"></line>
-                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                            </svg>
-                            Details
-                        </button>
-                    ` : ''}
                 </div>
             </div>
             `;
         }).join('');
         
-        // Add event delegation for project card clicks and details buttons
+        // Add event delegation for project card clicks
         const handleProjectCardClick = (e) => {
-            // Handle details button clicks
-            if (e.target.closest('.project-btn-details')) {
-                const button = e.target.closest('.project-btn-details');
-                const projectData = button.getAttribute('data-project');
-                if (projectData) {
-                    try {
-                        const project = JSON.parse(projectData);
-                        showProjectDetails(project);
-                    } catch (error) {
-                        console.error('Error parsing project data:', error);
-                    }
-                }
-                return;
-            }
-            
             // Handle project card clicks (redirect to demo or GitHub)
             const projectCard = e.target.closest('.project-card');
             if (projectCard) {
