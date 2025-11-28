@@ -11,6 +11,10 @@
     {
       "source": "/shorturl",
       "destination": "/shorturl.html"
+    },
+    {
+      "source": "/ephemeralchat",
+      "destination": "/ephemeralchat.html"
     }
   ],
   "redirects": [
