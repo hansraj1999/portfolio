@@ -939,6 +939,10 @@ section {
 }
 
 /* Contact Section */
+.contact {
+    background: #0a0a0a;
+}
+
 .contact-content {
     max-width: 900px;
     margin: 0 auto;
