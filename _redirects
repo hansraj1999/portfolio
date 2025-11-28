@@ -1,0 +1,9 @@
+# Redirect .html to clean URLs
+/blogs.html /blogs 301
+/shorturl.html /shorturl 301
+/index.html / 301
+
+# Rewrite clean URLs to HTML files
+/blogs /blogs.html 200
+/shorturl /shorturl.html 200
+

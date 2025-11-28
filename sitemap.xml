@@ -14,7 +14,7 @@
     
     <!-- Blogs Page -->
     <url>
-        <loc>https://hansraj.me/blogs.html</loc>
+        <loc>https://hansraj.me/blogs</loc>
         <lastmod>2025-11-28</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
@@ -22,7 +22,7 @@
     
     <!-- ShortURL Demo Page -->
     <url>
-        <loc>https://hansraj.me/shorturl.html</loc>
+        <loc>https://hansraj.me/shorturl</loc>
         <lastmod>2025-11-28</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>

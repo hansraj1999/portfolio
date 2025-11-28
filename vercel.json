@@ -3,12 +3,30 @@
     {
       "source": "/",
       "destination": "/index.html"
+    },
+    {
+      "source": "/blogs",
+      "destination": "/blogs.html"
+    },
+    {
+      "source": "/shorturl",
+      "destination": "/shorturl.html"
     }
   ],
   "redirects": [
     {
       "source": "/index.html",
       "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/blogs.html",
+      "destination": "/blogs",
+      "permanent": true
+    },
+    {
+      "source": "/shorturl.html",
+      "destination": "/shorturl",
       "permanent": true
     }
   ]
