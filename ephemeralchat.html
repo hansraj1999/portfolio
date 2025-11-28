@@ -17,6 +17,14 @@
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
     
+    <!-- Preload critical images for Technology Stack section -->
+    <link rel="preload" href="images/logos/python.svg" as="image">
+    <link rel="preload" href="images/logos/fastapi.svg" as="image">
+    <link rel="preload" href="images/logos/redis.svg" as="image">
+    <link rel="preload" href="images/logos/docker.svg" as="image">
+    <link rel="preload" href="images/logos/kubernetes-plain.svg" as="image">
+    <link rel="preload" href="images/logos/nginx.svg" as="image">
+    
     <!-- API Configuration -->
     <script src="config.js"></script>
     
@@ -472,6 +480,12 @@
             min-height: 100vh;
             background: #000000;
             padding-top: 80px;
+            position: relative;
+            overflow: visible;
+        }
+        
+        .shorturl-demo:not(:first-of-type) {
+            min-height: auto;
         }
         
         .demo-container {
@@ -507,6 +521,22 @@
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 2rem;
             margin-top: 2rem;
+        }
+        
+        /* Ensure Technology Stack section renders immediately */
+        #technology-stack-section {
+            visibility: visible !important;
+            opacity: 1 !important;
+            display: block !important;
+            position: relative !important;
+            z-index: 1 !important;
+            background: #000000 !important;
+        }
+        
+        /* Prevent first section from covering the Technology Stack section */
+        .shorturl-demo:first-of-type {
+            position: relative;
+            z-index: 0;
         }
         
         .arch-component {
@@ -700,7 +730,7 @@
     </nav>
     
     <!-- Interactive Demo Section -->
-    <section class="shorturl-demo">
+    <section class="shorturl-demo" style="position: relative; z-index: 0;">
         <div class="demo-container">
             <div style="margin-bottom: 1rem;">
                 <a href="/" style="color: var(--primary-color); text-decoration: none; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.3s ease; padding: 0.3rem 0.7rem; border-radius: 8px; background: rgba(163, 230, 53, 0.1); border: 1px solid var(--primary-color);" onmouseover="this.style.background='rgba(163, 230, 53, 0.2)'; this.style.transform='translateX(-5px)';" onmouseout="this.style.background='rgba(163, 230, 53, 0.1)'; this.style.transform='translateX(0)'">
@@ -853,7 +883,7 @@
     </section>
     
     <!-- Technology Stack & Architecture Section -->
-    <section class="shorturl-demo" style="padding-top: 0; margin-top: -2rem;">
+    <section id="technology-stack-section" class="shorturl-demo" style="padding-top: 0; margin-top: -8.5rem; min-height: auto; position: relative; z-index: 1;">
         <div class="demo-container" style="padding-top: 0;">
             <div class="demo-section">
                 <h2>Technology Stack & Architecture</h2>
@@ -918,6 +948,7 @@
                             alt="Python"
                             class="arch-icon-img"
                             style="width: 48px; height: 48px; margin-bottom: 1rem;"
+                            loading="eager"
                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
                         >
                         <span class="arch-icon" style="display: none;">🐍</span>
@@ -930,6 +961,7 @@
                             alt="FastAPI"
                             class="arch-icon-img"
                             style="width: 48px; height: 48px; margin-bottom: 1rem;"
+                            loading="eager"
                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
                         >
                         <span class="arch-icon" style="display: none;">⚡</span>
@@ -942,6 +974,7 @@
                             alt="Redis"
                             class="arch-icon-img"
                             style="width: 48px; height: 48px; margin-bottom: 1rem;"
+                            loading="eager"
                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
                         >
                         <span class="arch-icon" style="display: none;">⚡</span>
@@ -954,6 +987,7 @@
                             alt="Docker"
                             class="arch-icon-img"
                             style="width: 48px; height: 48px; margin-bottom: 1rem;"
+                            loading="eager"
                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
                         >
                         <span class="arch-icon" style="display: none;">🐳</span>
@@ -966,6 +1000,7 @@
                             alt="Kubernetes"
                             class="arch-icon-img"
                             style="width: 48px; height: 48px; margin-bottom: 1rem;"
+                            loading="eager"
                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
                         >
                         <span class="arch-icon" style="display: none;">☸️</span>
@@ -978,6 +1013,7 @@
                             alt="NGINX"
                             class="arch-icon-img"
                             style="width: 48px; height: 48px; margin-bottom: 1rem;"
+                            loading="eager"
                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
                         >
                         <span class="arch-icon" style="display: none;">🌐</span>
