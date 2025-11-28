@@ -785,6 +785,12 @@
                                     <label style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">Password (optional)</label>
                                     <input type="password" id="room-password-input" class="url-input" placeholder="Leave empty for no password" style="width: 100%;">
                                 </div>
+                                <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem; background: rgba(163, 230, 53, 0.05); border: 1px solid var(--border-color); border-radius: 8px;">
+                                    <input type="checkbox" id="destroy-on-owner-offline-input" style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary-color);">
+                                    <label for="destroy-on-owner-offline-input" style="color: var(--text-secondary); font-size: 0.875rem; cursor: pointer; flex: 1; margin: 0;">
+                                        Destroy room when owner goes offline
+                                    </label>
+                                </div>
                                 <button id="create-room-btn" class="demo-btn" style="width: 100%;">Create Room</button>
                             </div>
                         </div>
@@ -1245,6 +1251,7 @@ ws.onmessage = (event) => {
                 const expiry = parseInt(document.getElementById('room-expiry-input').value) || 600;
                 const maxUsers = parseInt(document.getElementById('room-max-users-input').value) || 20;
                 const password = document.getElementById('room-password-input').value.trim() || null;
+                const destroyOnOwnerOffline = document.getElementById('destroy-on-owner-offline-input').checked || false;
                 
                 createRoomBtn.disabled = true;
                 createRoomBtn.textContent = 'Creating...';
@@ -1260,7 +1267,8 @@ ws.onmessage = (event) => {
                             owner_name: currentUserName,
                             expiry_seconds: expiry,
                             max_users: maxUsers,
-                            password: password
+                            password: password,
+                            destroy_on_owner_offline: destroyOnOwnerOffline
                         })
                     });
                     
