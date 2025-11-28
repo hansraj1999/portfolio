@@ -24,7 +24,7 @@ const NAVBAR_HTML = `
                 <li><a href="index.html#home">Home</a></li>
                 <li><a href="index.html#about">About</a></li>
                 <li><a href="index.html#projects">Projects</a></li>
-                <li><a href="blogs.html">Blogs</a></li>
+                <li><a href="/blogs">Blogs</a></li>
                 <li><a href="index.html#contact">Contact</a></li>
             </ul>
         </div>
@@ -190,7 +190,12 @@ function showLoading(element) {
     element.innerHTML = `
         <div class="loading-container" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
             <div class="loading-spinner"></div>
-            <p style="color: var(--text-secondary); margin-top: 1rem;">Loading...</p>
+            <p style="color: var(--text-secondary); margin-top: 1rem; font-size: 0.9rem;">
+                System runs on Cloud Run. Please wait while we wake up the server...
+            </p>
+            <p style="color: var(--text-secondary); margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.7;">
+                This may take a few seconds on first request.
+            </p>
         </div>
     `;
 }
@@ -388,7 +393,7 @@ async function loadBlogPosts(page = 1, limit = 5) {
             viewAllLink.style.marginTop = '1rem';
             viewAllLink.style.marginBottom = '0';
             viewAllLink.innerHTML = `
-                <a href="blogs.html" style="color: #a3e635; text-decoration: none; font-size: 0.875rem; transition: opacity 0.3s ease;" onmouseover="this.style.opacity='0.8';" onmouseout="this.style.opacity='1';">View All Blogs →</a>
+                <a href="/blogs" style="color: #a3e635; text-decoration: none; font-size: 0.875rem; transition: opacity 0.3s ease;" onmouseover="this.style.opacity='0.8';" onmouseout="this.style.opacity='1';">View All Blogs →</a>
             `;
             blogList.appendChild(viewAllLink);
         }
