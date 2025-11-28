@@ -28,6 +28,11 @@
       "source": "/shorturl.html",
       "destination": "/shorturl",
       "permanent": true
+    },
+    {
+      "source": "/ephemeralchat.html",
+      "destination": "/ephemeralchat",
+      "permanent": true
     }
   ]
 }

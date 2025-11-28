@@ -28,5 +28,13 @@
         <priority>0.6</priority>
     </url>
     
+    <!-- EphemeralChat Demo Page -->
+    <url>
+        <loc>https://hansraj.me/ephemeralchat</loc>
+        <lastmod>2025-11-28</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
 </urlset>
 
