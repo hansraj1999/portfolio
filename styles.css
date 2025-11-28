@@ -618,13 +618,16 @@ section {
     border-radius: 12px;
     padding: 2rem;
     transition: all 0.3s ease;
-    cursor: pointer;
     width: 450px;
     height: 400px;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+}
+
+.project-card-clickable {
+    cursor: pointer;
 }
 
 .project-card:hover {
