@@ -1439,24 +1439,47 @@ ws.onmessage = (event) => {
                                 const isCurrentUser = userId === connectionId || 
                                                      (data.sender === currentUserName && data.user_name === currentUserName);
                                 
-                                // If this is NOT the current user, or if we don't have connectionId set yet, add them
+                                // Check if a user with the same name already exists (deduplication)
+                                let existingUserId = null;
+                                for (const [memberId, memberInfo] of onlineMembers.entries()) {
+                                    if (memberInfo.name === userName && memberId !== connectionId) {
+                                        existingUserId = memberId;
+                                        break;
+                                    }
+                                }
+                                
+                                // If this is NOT the current user, or if we don't have connectionId set yet
                                 if (!isCurrentUser || !connectionId) {
-                                    const wasAlreadyOnline = onlineMembers.has(userId);
-                                    onlineMembers.set(userId, {
-                                        name: userName,
-                                        connectionId: userId,
-                                        joinedAt: new Date()
-                                    });
-                                    console.log('User joined - userId:', userId, 'userName:', userName, 'wasAlreadyOnline:', wasAlreadyOnline, 'isCurrentUser:', isCurrentUser, 'total online:', onlineMembers.size);
+                                    // If user with same name exists, update that entry instead of creating duplicate
+                                    if (existingUserId) {
+                                        // Update existing entry with new connection_id if different
+                                        const existingMember = onlineMembers.get(existingUserId);
+                                        onlineMembers.delete(existingUserId);
+                                        onlineMembers.set(userId, {
+                                            name: userName,
+                                            connectionId: userId,
+                                            joinedAt: existingMember?.joinedAt || new Date()
+                                        });
+                                        console.log('User joined - updated existing user:', existingUserId, '->', userId, 'userName:', userName, 'total online:', onlineMembers.size);
+                                    } else {
+                                        // New user, add them
+                                        const wasAlreadyOnline = onlineMembers.has(userId);
+                                        onlineMembers.set(userId, {
+                                            name: userName,
+                                            connectionId: userId,
+                                            joinedAt: new Date()
+                                        });
+                                        console.log('User joined - userId:', userId, 'userName:', userName, 'wasAlreadyOnline:', wasAlreadyOnline, 'isCurrentUser:', isCurrentUser, 'total online:', onlineMembers.size);
+                                        // Only show join message if it's not the current user and wasn't already online
+                                        if (!isCurrentUser && !wasAlreadyOnline) {
+                                            showChatMessage('System', `${userName} joined the room`, 'info');
+                                        }
+                                    }
                                     // Update server count if provided
                                     if (data.online_count !== undefined && data.online_count !== null) {
                                         serverOnlineCount = data.online_count;
                                     }
                                     updateOnlineMembers();
-                                    // Only show join message if it's not the current user and wasn't already online
-                                    if (!isCurrentUser && !wasAlreadyOnline) {
-                                        showChatMessage('System', `${userName} joined the room`, 'info');
-                                    }
                                 } else {
                                     console.log('Skipping user_joined for current user (already added from system message):', userId);
                                 }
@@ -1465,12 +1488,26 @@ ws.onmessage = (event) => {
                             const userId = data.user_id || data.connection_id || data.connectionId;
                             const userName = data.sender || data.user_name || data.name;
                             if (userId) {
-                                const memberInfo = onlineMembers.get(userId);
-                                const displayName = userName || memberInfo?.name || `User${userId.substring(0, 8)}`;
-                                onlineMembers.delete(userId);
+                                let memberInfo = onlineMembers.get(userId);
+                                let displayName = userName || memberInfo?.name || `User${userId.substring(0, 8)}`;
+                                
+                                // If not found by connection_id, try to find by name
+                                if (!memberInfo && userName) {
+                                    for (const [memberId, member] of onlineMembers.entries()) {
+                                        if (member.name === userName) {
+                                            onlineMembers.delete(memberId);
+                                            memberInfo = member;
+                                            displayName = userName;
+                                            break;
+                                        }
+                                    }
+                                } else {
+                                    onlineMembers.delete(userId);
+                                }
+                                
                                 updateOnlineMembers();
                                 // Only show leave message if it's not the current user
-                                if (userId !== connectionId) {
+                                if (userId !== connectionId && memberInfo) {
                                     showChatMessage('System', `${displayName} left the room`, 'info');
                                 }
                             }
@@ -1480,11 +1517,26 @@ ws.onmessage = (event) => {
                                 const userId = data.connection_id || data.connectionId || data.user_id;
                                 const userName = data.display_name || data.user_name || data.name;
                                 if (userId) {
-                                    const memberInfo = onlineMembers.get(userId);
-                                    const displayName = userName || memberInfo?.name || `User${userId.substring(0, 8)}`;
-                                    const wasPresent = onlineMembers.has(userId);
-                                    const beforeCount = onlineMembers.size;
-                                    onlineMembers.delete(userId);
+                                    let memberInfo = onlineMembers.get(userId);
+                                    let displayName = userName || memberInfo?.name || `User${userId.substring(0, 8)}`;
+                                    let wasPresent = onlineMembers.has(userId);
+                                    
+                                    // If not found by connection_id, try to find by name
+                                    if (!wasPresent && userName) {
+                                        for (const [memberId, member] of onlineMembers.entries()) {
+                                            if (member.name === userName) {
+                                                onlineMembers.delete(memberId);
+                                                memberInfo = member;
+                                                displayName = userName;
+                                                wasPresent = true;
+                                                break;
+                                            }
+                                        }
+                                    } else {
+                                        onlineMembers.delete(userId);
+                                    }
+                                    
+                                    const beforeCount = onlineMembers.size + (wasPresent ? 1 : 0);
                                     const afterCount = onlineMembers.size;
                                     console.log('User offline - userId:', userId, 'userName:', displayName, 'wasPresent:', wasPresent, 'before count:', beforeCount, 'after count:', afterCount, 'server count:', data.online_count);
                                     // Update server count if provided
@@ -1504,25 +1556,48 @@ ws.onmessage = (event) => {
                                     // Check if this is the current user
                                     const isCurrentUser = userId === connectionId;
                                     
+                                    // Check if a user with the same name already exists (deduplication)
+                                    let existingUserId = null;
+                                    for (const [memberId, memberInfo] of onlineMembers.entries()) {
+                                        if (memberInfo.name === userName && memberId !== connectionId) {
+                                            existingUserId = memberId;
+                                            break;
+                                        }
+                                    }
+                                    
                                     // If this is the current user and we already have them (from system message), skip
                                     // Otherwise, add them
                                     if (!isCurrentUser || !onlineMembers.has(userId)) {
-                                        const wasAlreadyOnline = onlineMembers.has(userId);
-                                        onlineMembers.set(userId, {
-                                            name: userName,
-                                            connectionId: userId,
-                                            joinedAt: new Date()
-                                        });
-                                        console.log('User online - userId:', userId, 'userName:', userName, 'wasAlreadyOnline:', wasAlreadyOnline, 'isCurrentUser:', isCurrentUser, 'total online:', onlineMembers.size, 'server count:', data.online_count);
+                                        // If user with same name exists, update that entry instead of creating duplicate
+                                        if (existingUserId) {
+                                            // Update existing entry with new connection_id if different
+                                            const existingMember = onlineMembers.get(existingUserId);
+                                            onlineMembers.delete(existingUserId);
+                                            onlineMembers.set(userId, {
+                                                name: userName,
+                                                connectionId: userId,
+                                                joinedAt: existingMember?.joinedAt || new Date()
+                                            });
+                                            console.log('User online - updated existing user:', existingUserId, '->', userId, 'userName:', userName, 'total online:', onlineMembers.size, 'server count:', data.online_count);
+                                        } else {
+                                            // New user, add them
+                                            const wasAlreadyOnline = onlineMembers.has(userId);
+                                            onlineMembers.set(userId, {
+                                                name: userName,
+                                                connectionId: userId,
+                                                joinedAt: new Date()
+                                            });
+                                            console.log('User online - userId:', userId, 'userName:', userName, 'wasAlreadyOnline:', wasAlreadyOnline, 'isCurrentUser:', isCurrentUser, 'total online:', onlineMembers.size, 'server count:', data.online_count);
+                                            // Only show online message if it's not the current user and wasn't already online
+                                            if (!isCurrentUser && !wasAlreadyOnline) {
+                                                showChatMessage('System', `${userName} came online`, 'info');
+                                            }
+                                        }
                                         // Update server count if provided
                                         if (data.online_count !== undefined && data.online_count !== null) {
                                             serverOnlineCount = data.online_count;
                                         }
                                         updateOnlineMembers();
-                                        // Only show online message if it's not the current user and wasn't already online
-                                        if (!isCurrentUser && !wasAlreadyOnline) {
-                                            showChatMessage('System', `${userName} came online`, 'info');
-                                        }
                                     } else {
                                         console.log('Skipping user_online for current user (already added from system message):', userId);
                                     }
