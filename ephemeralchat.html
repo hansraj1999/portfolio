@@ -770,14 +770,6 @@
                             </div>
                         </div>
                         
-                        <!-- Online Members -->
-                        <div id="online-members-container" style="margin-bottom: 1rem; padding: 1rem; background: rgba(163, 230, 53, 0.05); border-radius: 8px; border: 1px solid var(--border-color);">
-                            <h4 style="color: var(--primary-color); font-size: 0.875rem; margin-bottom: 0.5rem;">Online Members</h4>
-                            <div id="online-members-list" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                                <span style="color: var(--text-secondary); font-size: 0.875rem;">No members online</span>
-                            </div>
-                        </div>
-                        
                         <!-- Chat Messages -->
                         <div id="chat-messages-container" style="height: 400px; overflow-y: auto; background: #000000; border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
                             <div style="color: var(--text-secondary); text-align: center; font-size: 0.875rem; padding: 2rem;">
@@ -1179,7 +1171,6 @@ ws.onmessage = (event) => {
         const roomSetupSection = document.getElementById('room-setup-section');
         const chatInterfaceSection = document.getElementById('chat-interface-section');
         const chatMessagesContainer = document.getElementById('chat-messages-container');
-        const onlineMembersList = document.getElementById('online-members-list');
         const onlineCount = document.getElementById('online-count');
         
         if (createRoomBtn) {
@@ -1359,6 +1350,11 @@ ws.onmessage = (event) => {
                             connection_id: connectionId,
                             user_name: currentUserName
                         }));
+                        // Request current room members/presence info
+                        currentWebSocket.send(JSON.stringify({
+                            type: 'get_presence',
+                            room_id: roomId
+                        }));
                     } catch (error) {
                         console.error('Failed to send user_joined message:', error);
                     }
@@ -1419,6 +1415,24 @@ ws.onmessage = (event) => {
                                     });
                                     console.log('Added current user with server connection_id:', connectionId, 'total online:', onlineMembers.size);
                                 }
+                            }
+                            // Handle initial presence data if provided in system message
+                            if (data.members && Array.isArray(data.members)) {
+                                console.log('System message contains', data.members.length, 'members');
+                                data.members.forEach(member => {
+                                    const memberId = member.id || member.connection_id || member.user_id;
+                                    const memberName = member.name || member.user_name || member.sender || `User${memberId ? memberId.substring(0, 8) : ''}`;
+                                    if (memberId && memberId !== connectionId) {
+                                        // Don't overwrite current user
+                                        if (!onlineMembers.has(memberId)) {
+                                            onlineMembers.set(memberId, {
+                                                name: memberName,
+                                                connectionId: memberId,
+                                                joinedAt: member.joined_at ? new Date(member.joined_at) : new Date()
+                                            });
+                                        }
+                                    }
+                                });
                             }
                             // Update server count if provided
                             if (data.online_count !== undefined && data.online_count !== null) {
@@ -1610,21 +1624,53 @@ ws.onmessage = (event) => {
                             }
                         } else if (data.type === 'error') {
                             showChatMessage('System', data.message || 'An error occurred', 'error');
-                        } else if (data.type === 'room_info' || data.type === 'presence_update') {
+                        } else if (data.type === 'room_info' || data.type === 'presence_update' || data.type === 'presence') {
                             // Update presence from room info or presence update
                             if (data.members && Array.isArray(data.members)) {
-                                onlineMembers.clear();
+                                console.log('Received room_info/presence_update with', data.members.length, 'members');
+                                // Don't clear - merge with existing to avoid losing current user
                                 data.members.forEach(member => {
                                     const memberId = member.id || member.connection_id || member.user_id;
                                     const memberName = member.name || member.user_name || member.sender || `User${memberId ? memberId.substring(0, 8) : ''}`;
                                     if (memberId) {
-                                        onlineMembers.set(memberId, {
-                                            name: memberName,
-                                            connectionId: memberId,
-                                            joinedAt: member.joined_at ? new Date(member.joined_at) : new Date()
+                                        // Only add if not already present (to preserve current user's data)
+                                        if (!onlineMembers.has(memberId)) {
+                                            onlineMembers.set(memberId, {
+                                                name: memberName,
+                                                connectionId: memberId,
+                                                joinedAt: member.joined_at ? new Date(member.joined_at) : new Date()
+                                            });
+                                        } else {
+                                            // Update name if different (in case server has updated info)
+                                            const existing = onlineMembers.get(memberId);
+                                            if (existing.name !== memberName && memberName) {
+                                                existing.name = memberName;
+                                            }
+                                        }
+                                    }
+                                });
+                                // Update server count if provided
+                                if (data.online_count !== undefined && data.online_count !== null) {
+                                    serverOnlineCount = data.online_count;
+                                }
+                                updateOnlineMembers();
+                            } else if (data.online_users && Array.isArray(data.online_users)) {
+                                // Alternative format: online_users array
+                                console.log('Received presence with', data.online_users.length, 'online users');
+                                data.online_users.forEach(user => {
+                                    const userId = user.connection_id || user.id || user.user_id;
+                                    const userName = user.name || user.user_name || user.display_name || `User${userId ? userId.substring(0, 8) : ''}`;
+                                    if (userId && !onlineMembers.has(userId)) {
+                                        onlineMembers.set(userId, {
+                                            name: userName,
+                                            connectionId: userId,
+                                            joinedAt: user.joined_at ? new Date(user.joined_at) : new Date()
                                         });
                                     }
                                 });
+                                if (data.online_count !== undefined && data.online_count !== null) {
+                                    serverOnlineCount = data.online_count;
+                                }
                                 updateOnlineMembers();
                             }
                         }
@@ -1973,59 +2019,13 @@ ws.onmessage = (event) => {
             }
         }
         
-        // Update online members with real-time presence
+        // Update online members count
         function updateOnlineMembers() {
-            if (!onlineCount || !onlineMembersList) return;
+            if (!onlineCount) return;
             
             // Use server's online_count if available, otherwise use local count
             const displayCount = serverOnlineCount !== null ? serverOnlineCount : onlineMembers.size;
-            onlineCount.textContent = `${displayCount} online`;
-            
-            if (onlineMembers.size === 0) {
-                onlineMembersList.innerHTML = '<span style="color: var(--text-secondary); font-size: 0.875rem;">No members online</span>';
-            } else {
-                onlineMembersList.innerHTML = '';
-                onlineMembers.forEach((memberInfo, memberId) => {
-                    const memberSpan = document.createElement('span');
-                    memberSpan.style.cssText = 'padding: 0.25rem 0.75rem; background: rgba(163, 230, 53, 0.1); border: 1px solid var(--primary-color); border-radius: 20px; color: var(--primary-color); font-size: 0.875rem; display: inline-flex; align-items: center; gap: 0.5rem;';
-                    
-                    // Add online indicator dot
-                    const indicator = document.createElement('span');
-                    indicator.style.cssText = 'width: 8px; height: 8px; background: var(--primary-color); border-radius: 50%; display: inline-block; animation: pulse 2s infinite;';
-                    memberSpan.appendChild(indicator);
-                    
-                    // Add user name
-                    const nameSpan = document.createElement('span');
-                    nameSpan.textContent = memberInfo.name || `User${memberId.substring(0, 8)}`;
-                    // Highlight current user
-                    if (memberId === connectionId) {
-                        nameSpan.style.fontWeight = '600';
-                        nameSpan.textContent += ' (You)';
-                    }
-                    memberSpan.appendChild(nameSpan);
-                    
-                    onlineMembersList.appendChild(memberSpan);
-                });
-            }
-        }
-        
-        // Add pulse animation for online indicator
-        if (!document.getElementById('presence-styles')) {
-            const style = document.createElement('style');
-            style.id = 'presence-styles';
-            style.textContent = `
-                @keyframes pulse {
-                    0%, 100% {
-                        opacity: 1;
-                        transform: scale(1);
-                    }
-                    50% {
-                        opacity: 0.5;
-                        transform: scale(0.8);
-                    }
-                }
-            `;
-            document.head.appendChild(style);
+            onlineCount.textContent = `${displayCount}`;
         }
         
         // Copy code to clipboard function
