@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Hansraj Deghun">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- API Configuration -->
+    <script src="config.js"></script>
+    
+    <!-- Page-specific meta tags -->
+    <meta name="description" content="EphemeralChat - A complete backend-focused ephemeral (self-destructing) chat rooms project. Built with FastAPI, WebSockets, and Redis. Real-time messaging with automatic room expiration.">
+    <meta name="keywords" content="EphemeralChat, Chat Rooms, WebSocket, FastAPI, Redis, Real-time Messaging, Self-destructing Chat">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="EphemeralChat - Self-Destructing Chat Rooms">
+    <meta property="og:description" content="A complete backend-focused ephemeral chat rooms project. Built with FastAPI, WebSockets, and Redis for real-time messaging.">
+    <meta property="og:url" content="https://ephemeralchat.hansraj.me">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="EphemeralChat - Self-Destructing Chat Rooms">
+    <meta name="twitter:description" content="A complete backend-focused ephemeral chat rooms project. Built with FastAPI, WebSockets, and Redis.">
+    
+    <title>EphemeralChat - Self-Destructing Chat Rooms | Hansraj Deghun</title>
+    
+    <style>
+        .product-hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+            position: relative;
+            overflow: hidden;
+            padding-top: 80px;
+        }
+        
+        .product-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(163, 230, 53, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        .product-hero-content {
+            text-align: center;
+            max-width: 900px;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .product-title {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #a3e635 0%, #84cc16 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+        
+        .product-tagline {
+            font-size: clamp(1.125rem, 2vw, 1.5rem);
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+        
+        .product-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+            box-shadow: 0 10px 30px rgba(163, 230, 53, 0.2);
+        }
+        
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(163, 230, 53, 0.1);
+            border: 2px solid var(--primary-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-icon svg {
+            width: 24px;
+            height: 24px;
+            color: var(--primary-color);
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        .tech-badge {
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            color: var(--text-primary);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .tech-badge:hover {
+            border-color: var(--primary-color);
+            background: rgba(163, 230, 53, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .architecture-section {
+            background: var(--bg-secondary);
+            padding: 5rem 0;
+        }
+        
+        .architecture-content {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .architecture-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .architecture-item h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .architecture-item p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+        
+        .code-snippet {
+            background: #000000;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            overflow-x: auto;
+        }
+        
+        .code-snippet code {
+            color: var(--primary-color);
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        
+        .shorturl-demo {
+            min-height: 100vh;
+            background: #000000;
+            padding-top: 80px;
+        }
+        
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .demo-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 0 10px rgba(163, 230, 53, 0.1);
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .demo-section:hover {
+            box-shadow: 0 0 20px rgba(163, 230, 53, 0.2);
+        }
+        
+        .demo-section h2 {
+            font-size: 1.75rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+        }
+        
+        .architecture-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .arch-component {
+            background: #0a0a0a;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 8px rgba(163, 230, 53, 0.1);
+        }
+        
+        .arch-component::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(163, 230, 53, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .arch-component:hover::before {
+            left: 100%;
+        }
+        
+        .arch-component:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(163, 230, 53, 0.3);
+        }
+        
+        .arch-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .arch-component h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.25rem;
+        }
+        
+        .arch-component p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        .architecture-diagram {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 0 20px rgba(163, 230, 53, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .architecture-diagram:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(163, 230, 53, 0.3);
+        }
+        
+        .demo-btn {
+            padding: 1rem 2rem;
+            background: var(--primary-color);
+            color: #000000;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .demo-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(163, 230, 53, 0.3);
+        }
+        
+        .demo-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .analytics-details {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #0a0a0a;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 0 8px rgba(163, 230, 53, 0.1);
+        }
+        
+        .analytics-details h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+        
+        @media (max-width: 768px) {
+            .product-hero {
+                padding-top: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <a href="/" class="nav-brand">Hansraj Deghun</a>
+            <ul class="nav-links">
+                <li><a href="/#home">Home</a></li>
+                <li><a href="/#about">About</a></li>
+                <li><a href="/#projects">Projects</a></li>
+                <li><a href="/blogs">Blogs</a></li>
+                <li><a href="/#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="product-hero">
+        <div class="product-hero-content">
+            <h1 class="product-title">EphemeralChat</h1>
+            <p class="product-tagline">
+                A complete backend-focused ephemeral (self-destructing) chat rooms project. 
+                Built with FastAPI, WebSockets, and Redis for real-time messaging with automatic room expiration.
+            </p>
+            <div class="product-buttons">
+                <a href="https://github.com/hansraj1999/EphemeralChat" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    View on GitHub
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Technology Stack & Architecture Section -->
+    <section class="shorturl-demo" style="padding-top: 0;">
+        <div class="demo-container">
+            <div style="margin-bottom: 1rem;">
+                <a href="/#projects" style="color: var(--primary-color); text-decoration: none; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.3s ease; padding: 0.3rem 0.7rem; border-radius: 8px; background: rgba(163, 230, 53, 0.1); border: 1px solid var(--primary-color);" onmouseover="this.style.background='rgba(163, 230, 53, 0.2)'; this.style.transform='translateX(-5px)';" onmouseout="this.style.background='rgba(163, 230, 53, 0.1)'; this.style.transform='translateX(0)'">
+                    ← Back to Portfolio
+                </a>
+            </div>
+            <div class="demo-section">
+                <h2>Technology Stack & Architecture</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                    EphemeralChat is built with a scalable architecture designed for real-time messaging and horizontal scaling. 
+                    The system uses Redis pub/sub for message distribution across multiple instances, enabling high availability and performance.
+                </p>
+                
+                <div style="background: #0a0a0a; border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 0 10px rgba(163, 230, 53, 0.1);">
+                    <h3 style="color: var(--primary-color); margin-bottom: 1.5rem; font-size: 1.25rem;">Core Technologies</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                        <div>
+                            <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">Backend</h4>
+                            <ul style="color: var(--text-secondary); list-style: none; padding: 0;">
+                                <li style="padding: 0.25rem 0;">• Python 3.9+</li>
+                                <li style="padding: 0.25rem 0;">• FastAPI (Async Framework)</li>
+                                <li style="padding: 0.25rem 0;">• WebSockets (Real-time)</li>
+                                <li style="padding: 0.25rem 0;">• Pydantic (Data Validation)</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">Message Distribution</h4>
+                            <ul style="color: var(--text-secondary); list-style: none; padding: 0;">
+                                <li style="padding: 0.25rem 0;">• Redis (Pub/Sub)</li>
+                                <li style="padding: 0.25rem 0;">• Redis TTL (Auto-cleanup)</li>
+                                <li style="padding: 0.25rem 0;">• Connection Tracking</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">Infrastructure</h4>
+                            <ul style="color: var(--text-secondary); list-style: none; padding: 0;">
+                                <li style="padding: 0.25rem 0;">• Docker & Docker Compose</li>
+                                <li style="padding: 0.25rem 0;">• Uvicorn (ASGI Server)</li>
+                                <li style="padding: 0.25rem 0;">• Horizontal Scaling</li>
+                                <li style="padding: 0.25rem 0;">• Load Balancer Ready</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">Features</h4>
+                            <ul style="color: var(--text-secondary); list-style: none; padding: 0;">
+                                <li style="padding: 0.25rem 0;">• Room Expiration (TTL)</li>
+                                <li style="padding: 0.25rem 0;">• Password Protection</li>
+                                <li style="padding: 0.25rem 0;">• User Limits</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Architecture Diagram Image -->
+                <div style="text-align: center; margin: 2rem 0;">
+                    <img 
+                        src="https://via.placeholder.com/800x400/0a0a0a/a3e635?text=EphemeralChat+Architecture+Diagram" 
+                        alt="EphemeralChat System Architecture Diagram"
+                        class="architecture-diagram"
+                        onerror="this.style.display='none'"
+                    >
+                </div>
+                
+                <div class="architecture-grid">
+                    <div class="arch-component">
+                        <img 
+                            src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" 
+                            alt="Python"
+                            class="arch-icon-img"
+                            style="width: 48px; height: 48px; margin-bottom: 1rem;"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                        >
+                        <span class="arch-icon" style="display: none;">🐍</span>
+                        <h3>Python FastAPI</h3>
+                        <p>High-performance async API server handling WebSocket connections and REST endpoints for room management</p>
+                    </div>
+                    <div class="arch-component">
+                        <img 
+                            src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/fastapi/fastapi-original.svg" 
+                            alt="FastAPI"
+                            class="arch-icon-img"
+                            style="width: 48px; height: 48px; margin-bottom: 1rem;"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                        >
+                        <span class="arch-icon" style="display: none;">⚡</span>
+                        <h3>FastAPI</h3>
+                        <p>Modern, fast web framework for building APIs with automatic OpenAPI documentation and WebSocket support</p>
+                    </div>
+                    <div class="arch-component">
+                        <img 
+                            src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redis/redis-original.svg" 
+                            alt="Redis"
+                            class="arch-icon-img"
+                            style="width: 48px; height: 48px; margin-bottom: 1rem;"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                        >
+                        <span class="arch-icon" style="display: none;">⚡</span>
+                        <h3>Redis Pub/Sub</h3>
+                        <p>Message distribution system enabling horizontal scaling. Messages broadcast to all instances via pub/sub channels</p>
+                    </div>
+                    <div class="arch-component">
+                        <img 
+                            src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" 
+                            alt="Docker"
+                            class="arch-icon-img"
+                            style="width: 48px; height: 48px; margin-bottom: 1rem;"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                        >
+                        <span class="arch-icon" style="display: none;">🐳</span>
+                        <h3>Docker</h3>
+                        <p>Containerized deployment with Docker Compose for easy setup and consistent environments</p>
+                    </div>
+                    <div class="arch-component">
+                        <img 
+                            src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kubernetes/kubernetes-plain.svg" 
+                            alt="Kubernetes"
+                            class="arch-icon-img"
+                            style="width: 48px; height: 48px; margin-bottom: 1rem;"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                        >
+                        <span class="arch-icon" style="display: none;">☸️</span>
+                        <h3>Horizontal Scaling</h3>
+                        <p>Run multiple instances behind a load balancer. Redis pub/sub ensures messages reach all instances</p>
+                    </div>
+                    <div class="arch-component">
+                        <img 
+                            src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nginx/nginx-original.svg" 
+                            alt="NGINX"
+                            class="arch-icon-img"
+                            style="width: 48px; height: 48px; margin-bottom: 1rem;"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+                        >
+                        <span class="arch-icon" style="display: none;">🌐</span>
+                        <h3>Load Balancer</h3>
+                        <p>Distribute WebSocket connections across multiple application instances for high availability</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Key Features Section -->
+            <div class="demo-section">
+                <h2>Key Features</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                    EphemeralChat provides a complete solution for ephemeral chat rooms with real-time messaging, 
+                    automatic expiration, and horizontal scaling capabilities.
+                </p>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                                <path d="M2 17l10 5 10-5"></path>
+                                <path d="M2 12l10 5 10-5"></path>
+                            </svg>
+                        </div>
+                        <h3>Self-Destructing Rooms</h3>
+                        <p>Chat rooms automatically expire after a set time (default 10 minutes). No manual cleanup required - rooms disappear when their TTL expires.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                        </div>
+                        <h3>Real-Time Messaging</h3>
+                        <p>WebSocket-based real-time communication ensures instant message delivery across all connected clients in a room.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                        </div>
+                        <h3>Password Protection</h3>
+                        <p>Optional password protection for rooms. Secure your conversations with simple password-based access control.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                        </div>
+                        <h3>User Limits</h3>
+                        <p>Configurable maximum users per room (default 20). Prevents overcrowding and maintains performance.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="16 18 22 12 16 6"></polyline>
+                                <polyline points="8 6 2 12 8 18"></polyline>
+                            </svg>
+                        </div>
+                        <h3>Horizontal Scaling</h3>
+                        <p>Redis pub/sub architecture enables horizontal scaling. Run multiple instances behind a load balancer for high availability.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                <line x1="8" y1="21" x2="16" y2="21"></line>
+                                <line x1="12" y1="17" x2="12" y2="21"></line>
+                            </svg>
+                        </div>
+                        <h3>Docker Ready</h3>
+                        <p>Fully containerized with Docker and Docker Compose. Deploy in seconds with a single command.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- API Documentation Section -->
+            <div class="demo-section">
+                <h2>API Documentation & Examples</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                    Integrate EphemeralChat into your application using our RESTful API and WebSocket endpoints. Full interactive documentation is available.
+                </p>
+                <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+                    <a href="https://ephemeralchat.hansraj.me/docs" target="_blank" rel="noopener noreferrer" class="demo-btn" style="text-decoration: none; display: inline-block;">
+                        📚 View API Documentation
+                    </a>
+                </div>
+                
+                <div class="analytics-details">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Create Room (cURL Example)</h3>
+                        <button onclick="copyCodeToClipboard('curl-example')" class="demo-btn" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Copy Code</button>
+                    </div>
+                    <pre id="curl-example" style="background: #0a0a0a; padding: 1.5rem; border-radius: 8px; overflow-x: auto; border: 1px solid var(--border-color); color: var(--text-secondary); font-size: 0.875rem; line-height: 1.6; position: relative;"><code>curl -X 'POST' \
+  'https://ephemeralchat.hansraj.me/rooms/' \
+  -H 'accept: application/json' \
+  -H 'content-type: application/json' \
+  -d '{
+  "name": "My Chat Room",
+  "expiry_seconds": 600,
+  "max_users": 20,
+  "password": "optional_password"
+}'</code></pre>
+                </div>
+                
+                <div class="analytics-details" style="margin-top: 2rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>Python WebSocket Example</h3>
+                        <button onclick="copyCodeToClipboard('python-example')" class="demo-btn" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Copy Code</button>
+                    </div>
+                    <pre id="python-example" style="background: #0a0a0a; padding: 1.5rem; border-radius: 8px; overflow-x: auto; border: 1px solid var(--border-color); color: var(--text-secondary); font-size: 0.875rem; line-height: 1.6; position: relative;"><code>import asyncio
+import websockets
+import json
+
+async def chat_client():
+    uri = "ws://ephemeralchat.hansraj.me/rooms/{room_id}/ws"
+    async with websockets.connect(uri) as websocket:
+        # Send a message
+        message = {
+            "type": "message",
+            "content": "Hello, World!"
+        }
+        await websocket.send(json.dumps(message))
+        
+        # Receive messages
+        async for message in websocket:
+            data = json.loads(message)
+            print(f"Received: {data}")
+
+asyncio.run(chat_client())</code></pre>
+                </div>
+                
+                <div class="analytics-details" style="margin-top: 2rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3>JavaScript WebSocket Example</h3>
+                        <button onclick="copyCodeToClipboard('js-example')" class="demo-btn" style="padding: 0.5rem 1rem; font-size: 0.875rem;">Copy Code</button>
+                    </div>
+                    <pre id="js-example" style="background: #0a0a0a; padding: 1.5rem; border-radius: 8px; overflow-x: auto; border: 1px solid var(--border-color); color: var(--text-secondary); font-size: 0.875rem; line-height: 1.6; position: relative;"><code>// Create room first
+const createRoom = async () => {
+  const response = await fetch('https://ephemeralchat.hansraj.me/rooms/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      name: 'My Chat Room',
+      expiry_seconds: 600,
+      max_users: 20
+    })
+  });
+  const room = await response.json();
+  return room.room_id;
+};
+
+// Connect via WebSocket
+const roomId = await createRoom();
+const ws = new WebSocket(`wss://ephemeralchat.hansraj.me/rooms/${roomId}/ws`);
+
+ws.onopen = () => {
+  console.log('Connected to room');
+  ws.send(JSON.stringify({
+    type: 'message',
+    content: 'Hello, World!'
+  }));
+};
+
+ws.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  console.log('Received:', data);
+};</code></pre>
+                </div>
+            </div>
+            
+            <!-- Call to Action Section -->
+            <div class="demo-section" style="background: rgba(163, 230, 53, 0.05); border: 2px solid var(--primary-color);">
+                <div style="text-align: center; padding: 1rem 0;">
+                    <h2 style="color: var(--primary-color); margin-bottom: 1rem;">Need This Service for Your Use Case?</h2>
+                    <p style="color: var(--text-secondary); font-size: 1.125rem; margin-bottom: 1.5rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                        EphemeralChat is built with enterprise-grade architecture and can handle real-time messaging at scale. 
+                        If you need a similar ephemeral chat solution for your business or want a tailored solution customized to your specific requirements, 
+                        I'd love to help you build it.
+                    </p>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <a href="/#contact" class="demo-btn" style="text-decoration: none; display: inline-block;">
+                            Contact Me
+                        </a>
+                        <a href="https://github.com/hansraj1999/EphemeralChat" target="_blank" rel="noopener noreferrer" class="demo-btn" style="text-decoration: none; display: inline-block; background: transparent; color: var(--primary-color); border-color: var(--primary-color);">
+                            View on GitHub
+                        </a>
+                        <a href="https://www.linkedin.com/in/hansraj-deghun" target="_blank" rel="noopener noreferrer" class="demo-btn" style="text-decoration: none; display: inline-block; background: transparent; color: var(--primary-color); border-color: var(--primary-color);">
+                            Connect on LinkedIn
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <div id="footer-placeholder"></div>
+    
+    <script src="script.js"></script>
+    <script>
+        // Load footer
+        (async () => {
+            if (typeof loadFooter === 'function') {
+                await loadFooter();
+            }
+        })();
+        
+        // Copy code to clipboard function
+        window.copyCodeToClipboard = async function(elementId) {
+            const codeElement = document.getElementById(elementId);
+            const code = codeElement.querySelector('code').textContent;
+            try {
+                await navigator.clipboard.writeText(code);
+                // Find the button that triggered this
+                const buttons = document.querySelectorAll(`button[onclick*="${elementId}"]`);
+                if (buttons.length > 0) {
+                    const button = buttons[0];
+                    const originalText = button.textContent;
+                    button.textContent = 'Copied!';
+                    button.style.background = 'var(--primary-color)';
+                    button.style.color = '#000000';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.background = '';
+                        button.style.color = '';
+                    }, 2000);
+                }
+            } catch (err) {
+                console.error('Failed to copy:', err);
+                alert('Failed to copy to clipboard');
+            }
+        };
+        
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (!navbar) return;
+            
+            if (window.pageYOffset > 100) {
+                navbar.style.background = '#000000';
+            } else {
+                navbar.style.background = '#000000';
+            }
+        });
+    </script>
+</body>
+</html>
+
