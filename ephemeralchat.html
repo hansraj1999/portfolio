@@ -158,6 +158,26 @@
             animation: popupSlideIn 0.3s ease;
         }
         
+        .error-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #0a0a0a;
+            border: 2px solid #ff4444;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            z-index: 1000;
+            box-shadow: 0 0 30px rgba(255, 68, 68, 0.5);
+            animation: popupSlideIn 0.3s ease;
+        }
+        
+        .error-popup .popup-header {
+            color: #ff4444;
+        }
+        
         @keyframes popupSlideIn {
             from {
                 opacity: 0;
@@ -1346,7 +1366,10 @@ ws.onmessage = (event) => {
                         // Check if room was not found (404)
                         if (roomNotFound) {
                             closeSuccessPopup();
-                            showChatMessage('System', `Room "${roomId}" not found. The room may have expired or the room ID is incorrect.`, 'error');
+                            showErrorPopup('Room Not Found', {
+                                message: `The room "${roomId}" does not exist.`,
+                                details: 'The room may have expired, been deleted, or the room ID is incorrect. Please check the room ID and try again.'
+                            });
                             joinRoomBtn.disabled = false;
                             joinRoomBtn.textContent = 'Join Room';
                             return; // Don't proceed with WebSocket connection
@@ -1369,7 +1392,10 @@ ws.onmessage = (event) => {
                         // If we can't get room info after retries, check if it was a 404
                         if (roomNotFound) {
                             closeSuccessPopup();
-                            showChatMessage('System', `Room "${roomId}" not found. The room may have expired or the room ID is incorrect.`, 'error');
+                            showErrorPopup('Room Not Found', {
+                                message: `The room "${roomId}" does not exist.`,
+                                details: 'The room may have expired, been deleted, or the room ID is incorrect. Please check the room ID and try again.'
+                            });
                             joinRoomBtn.disabled = false;
                             joinRoomBtn.textContent = 'Join Room';
                             return; // Don't proceed with WebSocket connection
@@ -2139,6 +2165,58 @@ ws.onmessage = (event) => {
             if (popup) popup.remove();
             if (overlay) overlay.remove();
         }
+        
+        // Show error popup
+        function showErrorPopup(title, details) {
+            // Remove existing popups if any
+            const existingSuccessPopup = document.getElementById('success-popup');
+            const existingErrorPopup = document.getElementById('error-popup');
+            const existingOverlay = document.getElementById('popup-overlay');
+            if (existingSuccessPopup) existingSuccessPopup.remove();
+            if (existingErrorPopup) existingErrorPopup.remove();
+            if (existingOverlay) existingOverlay.remove();
+            
+            // Create overlay
+            const overlay = document.createElement('div');
+            overlay.id = 'popup-overlay';
+            overlay.className = 'popup-overlay';
+            overlay.onclick = closeErrorPopup;
+            
+            // Create popup
+            const popup = document.createElement('div');
+            popup.id = 'error-popup';
+            popup.className = 'error-popup';
+            
+            let popupHTML = `
+                <div class="popup-header">${title}</div>
+                <div class="popup-content">
+                    <div class="popup-detail">
+                        <div class="popup-detail-label" style="color: #ff4444; margin-bottom: 0.5rem;">${details.message || 'An error occurred'}</div>
+                        ${details.details ? `<div class="popup-detail-value" style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">${details.details}</div>` : ''}
+                    </div>
+                </div>
+                <div class="popup-actions">
+                    <button class="popup-close-btn" onclick="closeErrorPopup()" style="background: #ff4444; color: #ffffff;">Close</button>
+                </div>
+            `;
+            
+            popup.innerHTML = popupHTML;
+            
+            document.body.appendChild(overlay);
+            document.body.appendChild(popup);
+        }
+        
+        // Close error popup
+        function closeErrorPopup() {
+            const popup = document.getElementById('error-popup');
+            const overlay = document.getElementById('popup-overlay');
+            if (popup) popup.remove();
+            if (overlay) overlay.remove();
+        }
+        
+        // Make functions globally accessible
+        window.closeErrorPopup = closeErrorPopup;
+        window.closeSuccessPopup = closeSuccessPopup;
         
         // Copy to clipboard helper
         async function copyToClipboard(text, label, buttonElement) {
