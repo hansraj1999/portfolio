@@ -1154,6 +1154,7 @@ ws.onmessage = (event) => {
         let connectionId = null;
         let onlineMembers = new Map(); // Map of userId -> {name, connectionId, joinedAt}
         let currentUserName = null;
+        let serverOnlineCount = null; // Use server's online_count when available
         
         // Funny name generator
         const funnyNames = [
@@ -1317,6 +1318,19 @@ ws.onmessage = (event) => {
         // Connect WebSocket
         async function connectWebSocket(roomId, password) {
             try {
+                // Close any existing WebSocket connection before creating a new one
+                if (currentWebSocket) {
+                    console.log('Closing existing WebSocket before creating new one');
+                    try {
+                        if (currentWebSocket.readyState === WebSocket.OPEN || currentWebSocket.readyState === WebSocket.CONNECTING) {
+                            currentWebSocket.close(1000, 'Reconnecting');
+                        }
+                    } catch (error) {
+                        console.error('Error closing existing WebSocket:', error);
+                    }
+                    currentWebSocket = null;
+                }
+                
                 // Always use wss:// for production (HTTPS requires secure WebSocket)
                 // Use ws:// only for localhost development
                 const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
@@ -1329,18 +1343,14 @@ ws.onmessage = (event) => {
                 
                 currentWebSocket.onopen = () => {
                     connectionId = crypto.randomUUID();
-                    console.log('WebSocket connected successfully');
+                    console.log('WebSocket connected successfully, connectionId:', connectionId);
                     // Ensure we have a user name
                     if (!currentUserName) {
                         currentUserName = generateFunnyName();
                     }
-                    // Add current user to online members
-                    onlineMembers.set(connectionId, {
-                        name: currentUserName,
-                        connectionId: connectionId,
-                        joinedAt: new Date()
-                    });
-                    updateOnlineMembers();
+                    // Don't add current user here - wait for server to send presence/user_joined event
+                    // This ensures we use the server's connection_id
+                    console.log('Current user:', currentUserName, 'Waiting for server presence update');
                     // Send user name to server for presence tracking
                     try {
                         currentWebSocket.send(JSON.stringify({
@@ -1387,22 +1397,68 @@ ws.onmessage = (event) => {
                 currentWebSocket.onmessage = (event) => {
                     try {
                         const data = JSON.parse(event.data);
+                        console.log('WebSocket message received:', data);
                         
-                        if (data.type === 'message') {
+                        // Handle system message first - this contains the server-assigned connection_id
+                        if (data.type === 'system') {
+                            if (data.connection_id) {
+                                const oldConnectionId = connectionId;
+                                connectionId = data.connection_id;
+                                console.log('Updated connectionId from system message:', connectionId, 'was:', oldConnectionId);
+                                // Remove old entry if it exists
+                                if (oldConnectionId && oldConnectionId !== connectionId && onlineMembers.has(oldConnectionId)) {
+                                    onlineMembers.delete(oldConnectionId);
+                                    console.log('Removed old connectionId entry from system message:', oldConnectionId);
+                                }
+                                // Add current user with server's connection_id
+                                if (currentUserName) {
+                                    onlineMembers.set(connectionId, {
+                                        name: currentUserName,
+                                        connectionId: connectionId,
+                                        joinedAt: new Date()
+                                    });
+                                    console.log('Added current user with server connection_id:', connectionId, 'total online:', onlineMembers.size);
+                                }
+                            }
+                            // Update server count if provided
+                            if (data.online_count !== undefined && data.online_count !== null) {
+                                serverOnlineCount = data.online_count;
+                            }
+                            updateOnlineMembers();
+                            // Show system message
+                            if (data.message) {
+                                showChatMessage('System', data.message, 'info');
+                            }
+                        } else if (data.type === 'message') {
                             showChatMessage(data.sender || 'User', data.content, 'message');
                         } else if (data.type === 'user_joined') {
                             const userId = data.user_id || data.connection_id || data.connectionId;
                             const userName = data.sender || data.user_name || data.name || `User${userId ? userId.substring(0, 8) : ''}`;
                             if (userId) {
-                                onlineMembers.set(userId, {
-                                    name: userName,
-                                    connectionId: userId,
-                                    joinedAt: new Date()
-                                });
-                                updateOnlineMembers();
-                                // Only show join message if it's not the current user
-                                if (userId !== connectionId) {
-                                    showChatMessage('System', `${userName} joined the room`, 'info');
+                                // Check if this is the current user - if so, we should already have them from system message
+                                const isCurrentUser = userId === connectionId || 
+                                                     (data.sender === currentUserName && data.user_name === currentUserName);
+                                
+                                // If this is NOT the current user, or if we don't have connectionId set yet, add them
+                                if (!isCurrentUser || !connectionId) {
+                                    const wasAlreadyOnline = onlineMembers.has(userId);
+                                    onlineMembers.set(userId, {
+                                        name: userName,
+                                        connectionId: userId,
+                                        joinedAt: new Date()
+                                    });
+                                    console.log('User joined - userId:', userId, 'userName:', userName, 'wasAlreadyOnline:', wasAlreadyOnline, 'isCurrentUser:', isCurrentUser, 'total online:', onlineMembers.size);
+                                    // Update server count if provided
+                                    if (data.online_count !== undefined && data.online_count !== null) {
+                                        serverOnlineCount = data.online_count;
+                                    }
+                                    updateOnlineMembers();
+                                    // Only show join message if it's not the current user and wasn't already online
+                                    if (!isCurrentUser && !wasAlreadyOnline) {
+                                        showChatMessage('System', `${userName} joined the room`, 'info');
+                                    }
+                                } else {
+                                    console.log('Skipping user_joined for current user (already added from system message):', userId);
                                 }
                             }
                         } else if (data.type === 'user_left') {
@@ -1417,6 +1473,65 @@ ws.onmessage = (event) => {
                                 if (userId !== connectionId) {
                                     showChatMessage('System', `${displayName} left the room`, 'info');
                                 }
+                            }
+                        } else if (data.type === 'presence') {
+                            // Handle presence events (user_online, user_offline)
+                            if (data.event === 'user_offline') {
+                                const userId = data.connection_id || data.connectionId || data.user_id;
+                                const userName = data.display_name || data.user_name || data.name;
+                                if (userId) {
+                                    const memberInfo = onlineMembers.get(userId);
+                                    const displayName = userName || memberInfo?.name || `User${userId.substring(0, 8)}`;
+                                    const wasPresent = onlineMembers.has(userId);
+                                    const beforeCount = onlineMembers.size;
+                                    onlineMembers.delete(userId);
+                                    const afterCount = onlineMembers.size;
+                                    console.log('User offline - userId:', userId, 'userName:', displayName, 'wasPresent:', wasPresent, 'before count:', beforeCount, 'after count:', afterCount, 'server count:', data.online_count);
+                                    // Update server count if provided
+                                    if (data.online_count !== undefined && data.online_count !== null) {
+                                        serverOnlineCount = data.online_count;
+                                    }
+                                    updateOnlineMembers();
+                                    // Only show offline message if it's not the current user and was actually present
+                                    if (userId !== connectionId && wasPresent) {
+                                        showChatMessage('System', `${displayName} went offline`, 'info');
+                                    }
+                                }
+                            } else if (data.event === 'user_online') {
+                                const userId = data.connection_id || data.connectionId || data.user_id;
+                                const userName = data.display_name || data.user_name || data.name || `User${userId ? userId.substring(0, 8) : ''}`;
+                                if (userId) {
+                                    // Check if this is the current user
+                                    const isCurrentUser = userId === connectionId;
+                                    
+                                    // If this is the current user and we already have them (from system message), skip
+                                    // Otherwise, add them
+                                    if (!isCurrentUser || !onlineMembers.has(userId)) {
+                                        const wasAlreadyOnline = onlineMembers.has(userId);
+                                        onlineMembers.set(userId, {
+                                            name: userName,
+                                            connectionId: userId,
+                                            joinedAt: new Date()
+                                        });
+                                        console.log('User online - userId:', userId, 'userName:', userName, 'wasAlreadyOnline:', wasAlreadyOnline, 'isCurrentUser:', isCurrentUser, 'total online:', onlineMembers.size, 'server count:', data.online_count);
+                                        // Update server count if provided
+                                        if (data.online_count !== undefined && data.online_count !== null) {
+                                            serverOnlineCount = data.online_count;
+                                        }
+                                        updateOnlineMembers();
+                                        // Only show online message if it's not the current user and wasn't already online
+                                        if (!isCurrentUser && !wasAlreadyOnline) {
+                                            showChatMessage('System', `${userName} came online`, 'info');
+                                        }
+                                    } else {
+                                        console.log('Skipping user_online for current user (already added from system message):', userId);
+                                    }
+                                }
+                            }
+                            // Update server count if provided in any presence message
+                            if (data.online_count !== undefined && data.online_count !== null) {
+                                serverOnlineCount = data.online_count;
+                                updateOnlineMembers();
                             }
                         } else if (data.type === 'error') {
                             showChatMessage('System', data.message || 'An error occurred', 'error');
@@ -1535,18 +1650,68 @@ ws.onmessage = (event) => {
             console.warn('messageInput not found');
         }
         
+        // Function to properly close WebSocket
+        function closeWebSocket() {
+            if (currentWebSocket) {
+                const ws = currentWebSocket;
+                const state = ws.readyState;
+                const stateNames = {
+                    0: 'CONNECTING',
+                    1: 'OPEN',
+                    2: 'CLOSING',
+                    3: 'CLOSED'
+                };
+                console.log('Closing WebSocket, current state:', stateNames[state] || state);
+                
+                try {
+                    // Close with normal closure code (1000) if not already closed
+                    if (state === WebSocket.OPEN || state === WebSocket.CONNECTING) {
+                        ws.close(1000, 'User left room');
+                        console.log('WebSocket close() called');
+                    } else if (state === WebSocket.CLOSING) {
+                        console.log('WebSocket is already closing, waiting...');
+                    } else {
+                        console.log('WebSocket is already closed');
+                    }
+                } catch (error) {
+                    console.error('Error closing WebSocket:', error);
+                }
+                
+                // Clear reference immediately
+                currentWebSocket = null;
+                currentRoomId = null;
+                currentRoomName = null;
+                connectionId = null;
+                onlineMembers.clear();
+                serverOnlineCount = null;
+                updateOnlineMembers();
+                
+                // Force cleanup after a short delay if still not closed
+                setTimeout(() => {
+                    if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
+                        console.warn('WebSocket still open after close attempt, forcing close');
+                        try {
+                            ws.close(1000, 'Force close');
+                        } catch (e) {
+                            console.error('Error force closing WebSocket:', e);
+                        }
+                    }
+                }, 100);
+            } else {
+                console.log('No WebSocket to close');
+            }
+        }
+        
         // Leave room
         if (leaveRoomBtn) {
             leaveRoomBtn.addEventListener('click', () => {
-                if (currentWebSocket) {
-                    currentWebSocket.close();
-                }
+                console.log('Leave room button clicked');
+                closeWebSocket();
                 if (roomSetupSection) roomSetupSection.style.display = 'block';
                 if (chatInterfaceSection) chatInterfaceSection.style.display = 'none';
                 if (chatMessagesContainer) {
                     chatMessagesContainer.innerHTML = '<div style="color: var(--text-secondary); text-align: center; font-size: 0.875rem; padding: 2rem;">No messages yet. Start the conversation!</div>';
                 }
-                onlineMembers.clear();
                 currentUserName = null;
                 updateOnlineMembers();
             });
@@ -1736,7 +1901,10 @@ ws.onmessage = (event) => {
         // Update online members with real-time presence
         function updateOnlineMembers() {
             if (!onlineCount || !onlineMembersList) return;
-            onlineCount.textContent = `${onlineMembers.size} online`;
+            
+            // Use server's online_count if available, otherwise use local count
+            const displayCount = serverOnlineCount !== null ? serverOnlineCount : onlineMembers.size;
+            onlineCount.textContent = `${displayCount} online`;
             
             if (onlineMembers.size === 0) {
                 onlineMembersList.innerHTML = '<span style="color: var(--text-secondary); font-size: 0.875rem;">No members online</span>';
@@ -1844,6 +2012,25 @@ ws.onmessage = (event) => {
             } else {
                 navbar.style.background = '#000000';
             }
+        });
+        
+        // Cleanup WebSocket on page unload
+        window.addEventListener('beforeunload', () => {
+            closeWebSocket();
+        });
+        
+        // Cleanup WebSocket on page hide (when tab becomes inactive)
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                // Optional: close when tab becomes hidden
+                // Uncomment if you want to close on tab switch
+                // closeWebSocket();
+            }
+        });
+        
+        // Cleanup WebSocket on pagehide (more reliable than beforeunload)
+        window.addEventListener('pagehide', () => {
+            closeWebSocket();
         });
     </script>
 </body>
