@@ -1372,6 +1372,7 @@ ws.onmessage = (event) => {
                     // Try to get room info first with retry logic
                     let roomInfo = null;
                     let roomNotFound = false;
+                    let roomUnauthorized = false;
                     
                     try {
                         const result = await retryWithBackoff(async () => {
@@ -1380,21 +1381,33 @@ ws.onmessage = (event) => {
                             const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
                             
                             try {
-                                const infoResponse = await fetch(`${EPHEMERALCHAT_API_BASE}/rooms/${roomId}`, {
+                                // Build URL with password query parameter if provided
+                                let roomInfoUrl = `${EPHEMERALCHAT_API_BASE}/rooms/${roomId}`;
+                                if (password) {
+                                    roomInfoUrl = `${roomInfoUrl}?password=${encodeURIComponent(password)}`;
+                                }
+                                
+                                const infoResponse = await fetch(roomInfoUrl, {
                                     signal: controller.signal
                                 });
                                 clearTimeout(timeoutId);
                                 
                                 // Handle 404 - room doesn't exist
                                 if (infoResponse.status === 404) {
-                                    return { notFound: true, data: null };
+                                    return { notFound: true, unauthorized: false, data: null };
+                                }
+                                
+                                // Handle 401 - password required
+                                if (infoResponse.status === 401) {
+                                    const errorData = await infoResponse.json();
+                                    return { notFound: false, unauthorized: true, data: errorData };
                                 }
                                 
                                 if (!infoResponse.ok) {
                                     throw new Error(`HTTP ${infoResponse.status}: ${infoResponse.statusText}`);
                                 }
                                 
-                                return { notFound: false, data: await infoResponse.json() };
+                                return { notFound: false, unauthorized: false, data: await infoResponse.json() };
                             } catch (error) {
                                 clearTimeout(timeoutId);
                                 if (error.name === 'AbortError') {
@@ -1405,6 +1418,7 @@ ws.onmessage = (event) => {
                         }, 3, 2000, 10000);
                         
                         roomNotFound = result.notFound;
+                        roomUnauthorized = result.unauthorized;
                         roomInfo = result.data;
                         
                         // Check if room was not found (404)
@@ -1413,6 +1427,19 @@ ws.onmessage = (event) => {
                             showErrorPopup('Room Not Found', {
                                 message: `The room "${roomId}" does not exist.`,
                                 details: 'The room may have expired, been deleted, or the room ID is incorrect. Please check the room ID and try again.'
+                            });
+                            joinRoomBtn.disabled = false;
+                            joinRoomBtn.textContent = 'Join Room';
+                            return; // Don't proceed with WebSocket connection
+                        }
+                        
+                        // Check if password is required (401)
+                        if (roomUnauthorized) {
+                            closeSuccessPopup();
+                            const errorMessage = roomInfo?.detail || 'Password required for this room';
+                            showErrorPopup('Password Required', {
+                                message: errorMessage,
+                                details: 'Please enter the room password to join.'
                             });
                             joinRoomBtn.disabled = false;
                             joinRoomBtn.textContent = 'Join Room';
@@ -1433,12 +1460,22 @@ ws.onmessage = (event) => {
                             });
                         }
                     } catch (e) {
-                        // If we can't get room info after retries, check if it was a 404
+                        // If we can't get room info after retries, check if it was a 404 or 401
                         if (roomNotFound) {
                             closeSuccessPopup();
                             showErrorPopup('Room Not Found', {
                                 message: `The room "${roomId}" does not exist.`,
                                 details: 'The room may have expired, been deleted, or the room ID is incorrect. Please check the room ID and try again.'
+                            });
+                            joinRoomBtn.disabled = false;
+                            joinRoomBtn.textContent = 'Join Room';
+                            return; // Don't proceed with WebSocket connection
+                        }
+                        if (roomUnauthorized) {
+                            closeSuccessPopup();
+                            showErrorPopup('Password Required', {
+                                message: 'Password required for this room',
+                                details: 'Please enter the room password to join.'
                             });
                             joinRoomBtn.disabled = false;
                             joinRoomBtn.textContent = 'Join Room';
@@ -1452,7 +1489,7 @@ ws.onmessage = (event) => {
                     }
                     
                     // Connect WebSocket only if room exists or we couldn't verify
-                    if (!roomNotFound) {
+                    if (!roomNotFound && !roomUnauthorized) {
                         connectWebSocket(roomId, password).catch(error => {
                             console.error('WebSocket connection error:', error);
                             closeSuccessPopup();
@@ -1509,7 +1546,18 @@ ws.onmessage = (event) => {
                 const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
                 const wsProtocol = (window.location.protocol === 'https:' || !isLocalhost) ? 'wss:' : 'ws:';
                 const apiHost = EPHEMERALCHAT_API_BASE.replace(/^https?:\/\//, '');
-                const wsUrl = `${wsProtocol}//${apiHost}/rooms/${roomId}/ws`;
+                // Build WebSocket URL with display_name and password as query parameters
+                let wsUrl = `${wsProtocol}//${apiHost}/rooms/${roomId}/ws`;
+                const queryParams = [];
+                if (currentUserName) {
+                    queryParams.push(`display_name=${encodeURIComponent(currentUserName)}`);
+                }
+                if (password) {
+                    queryParams.push(`password=${encodeURIComponent(password)}`);
+                }
+                if (queryParams.length > 0) {
+                    wsUrl = `${wsUrl}?${queryParams.join('&')}`;
+                }
                 
                 console.log(`Connecting to WebSocket (attempt ${retryCount + 1}/${maxRetries + 1}):`, wsUrl);
                 
