@@ -1220,6 +1220,47 @@ section {
 }
 
 /* Responsive Design */
+/* Medium screens (1163px and below) - fix button/social link overflow */
+@media (max-width: 1200px) {
+    .hero-wrapper {
+        grid-template-columns: 60% 40%;
+    }
+    
+    .hero-content {
+        padding: 2rem 2.5rem;
+        overflow-y: auto;
+        min-height: auto;
+    }
+    
+    .hero-buttons {
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }
+    
+    .hero-buttons .btn {
+        font-size: 0.875rem;
+        padding: 0.7rem 1.2rem;
+        white-space: nowrap;
+    }
+    
+    .social-links {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+    
+    .hero-subtitle {
+        max-width: 90%;
+        font-size: 0.875rem;
+    }
+    
+    .hero-blogs {
+        max-width: 90%;
+        margin-top: 1rem;
+    }
+}
+
 /* iPad Pro (1024x1366) and below use mobile view */
 @media (max-width: 1024px) {
     .hero {
