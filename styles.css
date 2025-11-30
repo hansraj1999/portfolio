@@ -265,10 +265,7 @@ body {
 }
 
 .profile-image {
-    width: 500px;
-    height: 500px;
-    max-width: 80%;
-    max-height: 80%;
+    width: 450px;
     object-fit: cover;
     object-position: center center;
     border: 5px solid #000000;
