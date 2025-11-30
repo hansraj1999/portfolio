@@ -570,12 +570,8 @@ section {
 
 /* Projects Section */
 .projects {
-    overflow-x: auto;
-    overflow-y: hidden;
     padding-top: 2rem;
     padding-bottom: 3rem;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
 }
 
 .projects .container {
@@ -585,22 +581,22 @@ section {
     width: 100%;
 }
 
-/* Custom scrollbar for projects section */
-.projects::-webkit-scrollbar {
+/* Custom scrollbar for projects grid */
+.projects-grid::-webkit-scrollbar {
     height: 8px;
 }
 
-.projects::-webkit-scrollbar-track {
+.projects-grid::-webkit-scrollbar-track {
     background: var(--bg-secondary);
     border-radius: 4px;
 }
 
-.projects::-webkit-scrollbar-thumb {
+.projects-grid::-webkit-scrollbar-thumb {
     background: var(--primary-color);
     border-radius: 4px;
 }
 
-.projects::-webkit-scrollbar-thumb:hover {
+.projects-grid::-webkit-scrollbar-thumb:hover {
     background: var(--primary-dark);
 }
 
@@ -608,13 +604,16 @@ section {
     display: flex;
     flex-direction: row;
     gap: 2rem;
-    width: max-content;
-    min-width: 100%;
+    width: 100%;
     padding: 0 2rem;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     flex-wrap: nowrap;
     margin: 0 auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
 }
 
 .project-card {
