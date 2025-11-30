@@ -9,6 +9,10 @@
       "destination": "/blogs.html"
     },
     {
+      "source": "/calendar",
+      "destination": "/calendar.html"
+    },
+    {
       "source": "/shorturl",
       "destination": "/shorturl.html"
     },
@@ -26,6 +30,11 @@
     {
       "source": "/blogs.html",
       "destination": "/blogs",
+      "permanent": true
+    },
+    {
+      "source": "/calendar.html",
+      "destination": "/calendar",
       "permanent": true
     },
     {

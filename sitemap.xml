@@ -20,6 +20,14 @@
         <priority>0.8</priority>
     </url>
     
+    <!-- Calendar Page -->
+    <url>
+        <loc>https://hansraj.me/calendar</loc>
+        <lastmod>2025-11-28</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
     <!-- ShortURL Demo Page -->
     <url>
         <loc>https://hansraj.me/shorturl</loc>
