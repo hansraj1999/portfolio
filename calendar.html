@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Common Head Tags (shared across all pages) -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Hansraj Deghun">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="favicon.svg">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- API Configuration -->
+    <script src="config.js"></script>
+    
+    <!-- Sitemap -->
+    <link rel="sitemap" type="application/xml" href="sitemap.xml">
+    
+    <!-- Page-specific meta tags -->
+    <meta name="description" content="Book a meeting with Hansraj Deghun - Schedule a consultation or discussion about backend engineering, system design, or collaboration opportunities.">
+    <meta name="keywords" content="Schedule meeting, Book appointment, Calendar, Consultation, Backend Engineering, Software Engineering">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Book a Meeting | Hansraj Deghun - Calendar">
+    <meta property="og:description" content="Schedule a meeting with Hansraj Deghun. Book a consultation or discussion about backend engineering, system design, or collaboration opportunities.">
+    <meta property="og:url" content="https://hansraj.me/calendar">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Book a Meeting | Hansraj Deghun - Calendar">
+    <meta name="twitter:description" content="Schedule a meeting with Hansraj Deghun. Book a consultation or discussion.">
+    
+    <title>Book a Meeting | Hansraj Deghun - Calendar</title>
+    
+    <style>
+        .calendar-section {
+            padding: 100px 0 3rem;
+            background: #0a0a0a;
+            min-height: calc(100vh - 80px);
+        }
+        
+        .calendar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .calendar-intro {
+            text-align: center;
+            margin-bottom: 3rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .calendar-intro p {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+        
+        .calendar-wrapper {
+            background: #000000;
+            border: 2px solid var(--primary-color);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 0 30px rgba(163, 230, 53, 0.2);
+            margin-bottom: 2rem;
+        }
+        
+        .calendar-embed {
+            width: 100%;
+            height: 600px;
+            border: none;
+            border-radius: 8px;
+        }
+        
+        .calendly-inline-widget {
+            width: 100%;
+            height: 900px;
+            border-radius: 8px;
+        }
+        
+        .calendar-alternative {
+            text-align: center;
+            padding: 2rem;
+            background: #000000;
+            border: 2px solid var(--primary-color);
+            border-radius: 16px;
+            margin-top: 2rem;
+        }
+        
+        .calendar-alternative h3 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+        
+        .calendar-alternative p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .calendar-alternative p a {
+            color: var(--primary-color);
+            text-decoration: underline;
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+            font-weight: normal;
+            display: inline;
+        }
+        
+        .calendar-alternative p a:hover {
+            color: #b8f542;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .calendar-alternative .email-button {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            background: var(--primary-color);
+            color: #000000;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+        
+        .calendar-alternative .email-button:hover {
+            background: #b8f542;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(163, 230, 53, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .calendar-embed {
+                height: 600px;
+            }
+            
+            .calendly-inline-widget {
+                height: 600px;
+            }
+            
+            .calendar-wrapper {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation - Loaded from common navbar.html -->
+    <div id="navbar-placeholder"></div>
+
+    <!-- Calendar Section -->
+    <section id="calendar" class="calendar-section">
+        <div class="container calendar-container">
+            <h2 class="section-title">Book a Meeting</h2>
+           
+            <div class="calendar-wrapper">
+                <!-- Calendly Booking Widget -->
+                <!-- 
+                    TO SETUP CALENDLY:
+                    1. Sign up at https://calendly.com (free account)
+                    2. Create an event type (e.g., "30-minute meeting")
+                    3. Go to: Event Types > [Your Event] > Share > Embed
+                    4. Copy the "Inline embed" code
+                    5. Replace the data-url below with your Calendly event URL
+                       Format: https://calendly.com/yourusername/event-name
+                    Example: https://calendly.com/hansraj/30min
+                -->
+                <div class="calendly-inline-widget" 
+                     data-url="https://calendly.com/deghun/30min" 
+                     style="min-width:320px;height:800px;">
+                </div>
+                <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+            </div>
+            
+            <div class="calendar-intro" style="margin-top: 2rem;">
+                <p>
+                    Schedule a meeting with me to discuss backend engineering, system design, collaboration opportunities, 
+                    or any technical questions you might have. Choose a time that works best for you.
+                </p>
+            </div>
+            
+            <div class="calendar-alternative">
+                <h3>Prefer to schedule via email?</h3>
+                <p>Send me an email at <a href="mailto:deghun@gmail.com">deghun@gmail.com</a> with your preferred dates and times, and I'll get back to you.</p>
+                <a href="mailto:deghun@gmail.com?subject=Meeting Request" class="email-button">Send Email</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer - Loaded from common footer.html -->
+    <div id="footer-placeholder"></div>
+
+    <script src="script.js"></script>
+    <script>
+        // Ensure navbar and footer load even if script.js hasn't fully loaded
+        (function() {
+            if (document.getElementById('navbar-placeholder')) {
+                function tryLoadNavbar() {
+                    if (typeof loadNavbar === 'function') {
+                        loadNavbar();
+                    } else {
+                        setTimeout(tryLoadNavbar, 50);
+                    }
+                }
+                tryLoadNavbar();
+            }
+            
+            if (document.getElementById('footer-placeholder')) {
+                function tryLoadFooter() {
+                    if (typeof loadFooter === 'function') {
+                        loadFooter();
+                    } else {
+                        setTimeout(tryLoadFooter, 50);
+                    }
+                }
+                tryLoadFooter();
+            }
+        })();
+    </script>
+</body>
+</html>
