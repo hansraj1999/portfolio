@@ -1796,11 +1796,25 @@ body.project-page {
   border-top: 1px solid var(--line) !important;
   background: transparent !important;
   text-align: left !important;
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+  box-shadow: none !important;
+}
+
+.project-page .project-detail-section--metrics .stat-card:hover {
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 .project-page .project-detail-section--metrics .stat-value {
   color: var(--green) !important;
   font: 600 clamp(1.35rem, 4vw, 2rem)/1.1 var(--mono) !important;
+  font-variant-numeric: tabular-nums !important;
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
 }
 
 .project-page .project-detail-section--metrics .stat-label {
