@@ -7,6 +7,21 @@ const escapeHtml = (value = '') => String(value).replace(/[&<>"]/g, (character) 
 })[character]);
 const articleUrl = (post) => `article.html?slug=${encodeURIComponent(post.slug)}`;
 
+const excerptOverrides = {
+  'ever-wondered-how-database-connection-pools-are-created-and-maintained': 'How database drivers reuse TCP connections, coordinate concurrent borrowers, and keep connection setup off the request path.'
+};
+
+function displayExcerpt(post) {
+  const override = excerptOverrides[post.slug];
+  if (override) return override;
+
+  const title = String(post.title || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return String(post.excerpt || '')
+    .replace(new RegExp(`^${title}\\s*`, 'i'), '')
+    .replace(/^Background:\s*/i, '')
+    .trim();
+}
+
 function renderArchive() {
   const archive = document.querySelector('#blog-archive');
   if (!archive) return;
@@ -26,7 +41,7 @@ function renderArchive() {
     const query = search.value.trim().toLowerCase();
     const visible = posts.filter((post) => {
       const topicMatch = activeTopic === 'All' || post.topic === activeTopic;
-      const text = `${post.title} ${post.excerpt} ${post.topic} ${(post.tags || []).join(' ')}`.toLowerCase();
+      const text = `${post.title} ${displayExcerpt(post)} ${post.topic} ${(post.tags || []).join(' ')}`.toLowerCase();
       return topicMatch && (!query || text.includes(query));
     });
 
@@ -38,8 +53,8 @@ function renderArchive() {
 
     const lead = visible[0];
     const visual = lead.image ? `<img src="${escapeHtml(lead.image)}" alt="" loading="eager" decoding="async">` : '';
-    featured.innerHTML = `<a class="featured-card" href="${articleUrl(lead)}"><div class="featured-visual">${visual}</div><div class="featured-copy"><p class="post-kicker">${escapeHtml(lead.topic)} · ${escapeHtml(lead.dateLabel)}</p><h2>${escapeHtml(lead.title)}</h2><p>${escapeHtml(lead.excerpt)}</p><div class="post-foot"><span>${lead.readMinutes} min read</span><b>Read note ↗</b></div></div></a>`;
-    list.innerHTML = visible.slice(1).map((post, index) => `<a class="archive-row" href="${articleUrl(post)}"><span class="row-number">${String(index + 2).padStart(2, '0')}</span><div><p class="row-meta">${escapeHtml(post.topic)} · ${escapeHtml(post.dateLabel)}</p><h2>${escapeHtml(post.title)}</h2></div><p class="row-excerpt">${escapeHtml(post.excerpt)}</p><i aria-hidden="true">↗</i></a>`).join('');
+    featured.innerHTML = `<a class="featured-card" href="${articleUrl(lead)}"><div class="featured-visual">${visual}</div><div class="featured-copy"><p class="post-kicker">${escapeHtml(lead.topic)} · ${escapeHtml(lead.dateLabel)}</p><h2>${escapeHtml(lead.title)}</h2><p>${escapeHtml(displayExcerpt(lead))}</p><div class="post-foot"><span>${lead.readMinutes} min read</span><b>Read note ↗</b></div></div></a>`;
+    list.innerHTML = visible.slice(1).map((post, index) => `<a class="archive-row" href="${articleUrl(post)}"><span class="row-number">${String(index + 2).padStart(2, '0')}</span><div><p class="row-meta">${escapeHtml(post.topic)} · ${escapeHtml(post.dateLabel)}</p><h2>${escapeHtml(post.title)}</h2></div><p class="row-excerpt">${escapeHtml(displayExcerpt(post))}</p><i aria-hidden="true">↗</i></a>`).join('');
   }
 
   filters.addEventListener('click', (event) => {
@@ -119,6 +134,8 @@ function headingSlug(value, index) {
 }
 
 function prepareArticleContent(container, post) {
+  const readingLayout = container.closest('.article-reading-layout');
+  const tocPanel = document.querySelector('.article-toc');
   const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
   const textNodes = [];
   while (walker.nextNode()) textNodes.push(walker.currentNode);
@@ -131,7 +148,7 @@ function prepareArticleContent(container, post) {
     if (!element.textContent.trim() && !element.querySelector('img')) element.remove();
   });
 
-  const firstHeading = container.querySelector('h2, h3');
+  const firstHeading = container.querySelector('h2, h3, h4');
   if (firstHeading) {
     const headingText = cleanArticleText(firstHeading.textContent).toLowerCase();
     const titleText = cleanArticleText(post.title).toLowerCase();
@@ -145,17 +162,30 @@ function prepareArticleContent(container, post) {
     if (paragraph.querySelectorAll('br').length >= 2) paragraph.classList.add('article-sequence');
   });
 
-  const headings = [...container.querySelectorAll('h2, h3')];
+  container.querySelectorAll('p').forEach((paragraph) => {
+    const onlyChild = paragraph.children.length === 1 ? paragraph.firstElementChild : null;
+    const label = cleanArticleText(paragraph.textContent).trim();
+    if (onlyChild?.tagName === 'STRONG' && label.endsWith(':') && label.length <= 72) {
+      const heading = document.createElement('h2');
+      heading.textContent = label.replace(/:\s*$/, '');
+      paragraph.replaceWith(heading);
+    }
+  });
+
+  const headings = [...container.querySelectorAll('h2, h3, h4')];
   const toc = document.querySelector('#article-toc');
   headings.forEach((heading, index) => {
     heading.id = headingSlug(heading.textContent, index);
     heading.dataset.section = String(index + 1).padStart(2, '0');
   });
 
-  if (headings.length) {
+  if (headings.length >= 2) {
+    tocPanel.hidden = false;
+    readingLayout?.classList.remove('article-reading-layout--solo');
     toc.innerHTML = headings.map((heading) => `<a href="#${heading.id}" data-target="${heading.id}"><span>${heading.dataset.section}</span>${escapeHtml(heading.textContent.trim())}</a>`).join('');
   } else {
-    document.querySelector('.article-toc').hidden = true;
+    tocPanel.hidden = true;
+    readingLayout?.classList.add('article-reading-layout--solo');
   }
 
   container.querySelectorAll('pre').forEach((pre, index) => {
@@ -214,14 +244,15 @@ function renderArticle() {
   const index = posts.indexOf(post);
   const next = posts[index + 1] || posts[0];
   const canonical = `https://hansraj.me/article.html?slug=${encodeURIComponent(post.slug)}`;
+  const excerpt = displayExcerpt(post);
 
   document.title = `${post.title} — Hansraj Deghun`;
-  document.querySelector('meta[name="description"]').content = post.excerpt;
+  document.querySelector('meta[name="description"]').content = excerpt;
   document.querySelector('#canonical-url').href = canonical;
   document.querySelector('#og-title').content = post.title;
-  document.querySelector('#og-description').content = post.excerpt;
+  document.querySelector('#og-description').content = excerpt;
   document.querySelector('#og-url').content = canonical;
-  header.innerHTML = `<p class="prompt"><b>guest@portfolio</b><span>:</span><em>~/writing/${escapeHtml(post.slug)}</em><span>$</span> read</p><p class="post-kicker">${escapeHtml(post.topic)}</p><h1>${escapeHtml(post.title)}</h1><p class="article-deck">${escapeHtml(post.excerpt)}</p><div class="article-meta"><time datetime="${escapeHtml(post.date)}">${escapeHtml(post.dateLabel)}</time><span>${post.readMinutes} min read</span><span class="topic">Hansraj Deghun</span></div><div class="article-tools"><a href="blogs.html">All notes ↩</a><a href="${escapeHtml(post.originalUrl)}" target="_blank" rel="noopener noreferrer">Original on Medium ↗</a><button type="button" id="copy-link">Copy link</button></div>`;
+  header.innerHTML = `<p class="prompt"><b>guest@portfolio</b><span>:</span><em>~/writing/${escapeHtml(post.slug)}</em><span>$</span> read</p><p class="post-kicker">${escapeHtml(post.topic)}</p><h1>${escapeHtml(post.title)}</h1><p class="article-deck">${escapeHtml(excerpt)}</p><div class="article-meta"><time datetime="${escapeHtml(post.date)}">${escapeHtml(post.dateLabel)}</time><span>${post.readMinutes} min read</span><span class="topic">Hansraj Deghun</span></div><div class="article-tools"><a href="blogs.html">All notes ↩</a><a href="${escapeHtml(post.originalUrl)}" target="_blank" rel="noopener noreferrer">Original on Medium ↗</a><button type="button" id="copy-link">Copy link</button></div>`;
   content.innerHTML = sanitizeArticleHtml(post.content);
   prepareArticleContent(content, post);
   end.innerHTML = `<p>EOF · ${escapeHtml(post.dateLabel)}</p><a class="next-note" href="${articleUrl(next)}"><div><span>Read next</span><strong>${escapeHtml(next.title)}</strong></div><i aria-hidden="true">→</i></a>`;

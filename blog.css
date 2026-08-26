@@ -146,8 +146,10 @@
 }
 
 .article-page .article-content {
+  width: 100%;
   min-width: 0;
   max-width: var(--article-copy);
+  margin-inline: auto;
   padding-top: 0;
   color: #c8ceca;
   font-size: clamp(1.06rem, 1.8vw, 1.16rem);
@@ -338,6 +340,10 @@
     justify-content: center;
     align-items: start;
     gap: clamp(3.5rem, 7vw, 6.5rem);
+  }
+
+  .article-reading-layout--solo {
+    grid-template-columns: minmax(0, var(--article-copy));
   }
 
   .article-toc {
