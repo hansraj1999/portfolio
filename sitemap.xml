@@ -1,48 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-    
-    <!-- Home Page -->
-    <url>
-        <loc>https://hansraj.me/</loc>
-        <lastmod>2025-11-28</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>1.0</priority>
-    </url>
-    
-    <!-- Blogs Page -->
-    <url>
-        <loc>https://hansraj.me/blogs</loc>
-        <lastmod>2025-11-28</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-    </url>
-    
-    <!-- Calendar Page -->
-    <url>
-        <loc>https://hansraj.me/calendar</loc>
-        <lastmod>2025-11-28</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
-    </url>
-    
-    <!-- ShortURL Demo Page -->
-    <url>
-        <loc>https://hansraj.me/shorturl</loc>
-        <lastmod>2025-11-28</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.6</priority>
-    </url>
-    
-    <!-- EphemeralChat Demo Page -->
-    <url>
-        <loc>https://hansraj.me/ephemeralchat</loc>
-        <lastmod>2025-11-28</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.6</priority>
-    </url>
-    
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://hansraj.me/</loc>
+    <lastmod>2026-08-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://hansraj.me/blogs</loc>
+    <lastmod>2026-08-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://hansraj.me/article.html?slug=ephemeralchat-real-time-ephemeral-chat-rooms-that-scale-across-any-instanc</loc>
+    <lastmod>2025-12-03</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hansraj.me/article.html?slug=wherever-you-can-batch-always-batch</loc>
+    <lastmod>2025-10-03</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hansraj.me/article.html?slug=redis-pub-sub-local-memory-low-latency-high-consistency-caching</loc>
+    <lastmod>2025-09-03</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hansraj.me/article.html?slug=ever-wondered-how-database-connection-pools-are-created-and-maintained</loc>
+    <lastmod>2024-12-15</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://hansraj.me/article.html?slug=scaling-databases-with-consistent-hashing-a-comprehensive-guide</loc>
+    <lastmod>2024-12-10</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://hansraj.me/article.html?slug=hidden-mongodb-instances-essential-for-reliable-voting-and-deadlock-preven</loc>
+    <lastmod>2024-11-22</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://hansraj.me/article.html?slug=how-mongodb-loses-availability-in-the-cap-theorem</loc>
+    <lastmod>2024-10-30</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://hansraj.me/article.html?slug=the-cap-theorem-explained-choosing-the-right-database-for-your-needs</loc>
+    <lastmod>2024-10-18</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://hansraj.me/article.html?slug=understanding-sparse-indexes-in-mongodb-use-cases-pros-and-cons-and-query</loc>
+    <lastmod>2024-09-29</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://hansraj.me/article.html?slug=optimizing-mongodb-with-projections-beyond-just-saving-network-time</loc>
+    <lastmod>2024-09-16</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://hansraj.me/article.html?slug=zero-downtime-mysql-migration</loc>
+    <lastmod>2024-06-09</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://hansraj.me/shorturl</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://hansraj.me/ephemeralchat</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
 </urlset>
-

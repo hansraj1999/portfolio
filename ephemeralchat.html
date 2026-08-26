@@ -12,10 +12,12 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="terminal.css?v=2">
+    <link rel="stylesheet" href="project.css?v=8">
     
     <!-- Preload critical images for Technology Stack section -->
     <link rel="preload" href="images/logos/python.svg" as="image">
@@ -25,9 +27,6 @@
     <link rel="preload" href="images/logos/kubernetes-plain.svg" as="image">
     <link rel="preload" href="images/logos/nginx.svg" as="image">
     
-    <!-- API Configuration -->
-    <script src="config.js"></script>
-    
     <!-- Page-specific meta tags -->
     <meta name="description" content="EphemeralChat - A complete backend-focused ephemeral (self-destructing) chat rooms project. Built with FastAPI, WebSockets, and Redis. Real-time messaging with automatic room expiration.">
     <meta name="keywords" content="EphemeralChat, Chat Rooms, WebSocket, FastAPI, Redis, Real-time Messaging, Self-destructing Chat">
@@ -36,7 +35,8 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="EphemeralChat - Self-Destructing Chat Rooms">
     <meta property="og:description" content="A complete backend-focused ephemeral chat rooms project. Built with FastAPI, WebSockets, and Redis for real-time messaging.">
-    <meta property="og:url" content="https://ephemeralchat.hansraj.me">
+    <meta property="og:url" content="https://hansraj.me/ephemeralchat">
+    <link rel="canonical" href="https://hansraj.me/ephemeralchat">
     
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
@@ -714,23 +714,82 @@
         }
     </style>
 </head>
-<body>
+<body class="project-page">
     <!-- Navigation -->
-    <nav class="navbar" id="navbar">
-        <div class="container">
-            <a href="/" class="nav-brand">Hansraj Deghun</a>
-            <ul class="nav-links">
-                <li><a href="/#home">Home</a></li>
-                <li><a href="/#about">About</a></li>
-                <li><a href="/#projects">Projects</a></li>
-                <li><a href="/blogs">Blogs</a></li>
-                <li><a href="/#contact">Contact</a></li>
-            </ul>
-        </div>
-    </nav>
+    <a class="skip-link" href="#live-demo">Skip to live demo</a>
+    <header class="site-header" id="navbar">
+        <a class="terminal-brand" href="index.html#home" aria-label="Hansraj Deghun, home"><span>~/</span>hansraj-deghun <b>$</b><i aria-hidden="true"></i></a>
+        <nav aria-label="Primary navigation"><a href="index.html#experience">./experience</a><a href="index.html#writing">./writing</a><a href="index.html#skills">./skills</a><a class="is-active" href="index.html#systems">./systems</a><a href="index.html#contact">./contact</a></nav>
+        <div class="header-actions"><button id="command-button" aria-label="Open command palette">⌘K</button><a class="resume-small" href="https://drive.google.com/file/d/1dh3HAQpWbVnPlSdPzVh4nB1KLcUPBLRP/view?usp=sharing" target="_blank" rel="noopener">résumé ↗</a></div>
+    </header>
+
+    <main>
+        <section class="project-hero project-hero--topology">
+            <div class="project-masthead">
+                <div class="project-masthead__copy">
+                    <p class="prompt"><b>guest@portfolio</b><span>:</span><em>~/projects/ephemeral-chat</em><span>$</span> topology</p>
+                    <p class="project-index"><span>CASE STUDY / 01</span><i aria-hidden="true"></i><span>REAL-TIME SYSTEMS</span></p>
+                    <h1>Ephemeral<span>Chat</span></h1>
+                    <p class="project-hero__intro">A horizontally scalable room service where WebSocket clients can land on any application instance and still share one ordered conversation.</p>
+                    <div class="project-actions"><a href="#live-demo">Run live demo ↓</a><a href="https://github.com/hansraj1999/EphemeralChat" target="_blank" rel="noopener noreferrer">Source ↗</a><a href="article.html?slug=ephemeralchat-real-time-ephemeral-chat-rooms-that-scale-across-any-instanc">Read architecture ↗</a></div>
+                    <ul class="project-stack" aria-label="Technology stack"><li>FastAPI</li><li>WebSockets</li><li>Redis Pub/Sub</li><li>Redis TTL</li></ul>
+                </div>
+
+                <figure class="topology-panel">
+                    <figcaption><span>topology.live</span><b><i aria-hidden="true"></i> packets flowing</b></figcaption>
+                    <svg viewBox="0 0 760 470" role="img" aria-labelledby="topology-title topology-description">
+                        <title id="topology-title">EphemeralChat distributed system topology</title>
+                        <desc id="topology-description">Browser clients connect through a load balancer to multiple stateless FastAPI instances. Redis Pub/Sub fans messages across instances and Redis TTL expires room state.</desc>
+                        <defs>
+                            <pattern id="topology-grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="currentColor" stroke-opacity=".055"/></pattern>
+                            <filter id="topology-glow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                        </defs>
+                        <rect class="topology-grid" width="760" height="470" fill="url(#topology-grid)"/>
+
+                        <g class="topology-links" fill="none">
+                            <path d="M92 114H168C186 114 196 145 214 174"/>
+                            <path d="M92 234H214"/>
+                            <path d="M92 354H168C186 354 196 323 214 294"/>
+                            <path d="M334 234H360C378 234 380 112 400 112"/>
+                            <path d="M334 234H400"/>
+                            <path d="M334 234H360C378 234 380 356 400 356"/>
+                            <path d="M530 112H558C578 112 580 204 600 204"/>
+                            <path d="M530 234H600"/>
+                            <path d="M530 356H558C578 356 580 264 600 264"/>
+                            <path d="M660 304V372"/>
+                        </g>
+                        <g class="topology-packets" fill="none">
+                            <path d="M92 234H214"/>
+                            <path d="M334 234H400"/>
+                            <path d="M530 234H600"/>
+                        </g>
+
+                        <g class="topology-clients">
+                            <g transform="translate(48 90)"><circle cx="22" cy="22" r="21"/><circle class="status" cx="37" cy="7" r="4"/><text x="22" y="57">CLIENT A</text></g>
+                            <g transform="translate(48 210)"><circle cx="22" cy="22" r="21"/><circle class="status" cx="37" cy="7" r="4"/><text x="22" y="57">CLIENT B</text></g>
+                            <g transform="translate(48 330)"><circle cx="22" cy="22" r="21"/><circle class="status" cx="37" cy="7" r="4"/><text x="22" y="57">CLIENT C</text></g>
+                        </g>
+
+                        <g class="topology-node topology-node--edge" transform="translate(214 184)">
+                            <rect width="120" height="100"/><text class="eyebrow" x="16" y="28">EDGE / 01</text><text class="label" x="16" y="55">Load balancer</text><text class="meta" x="16" y="79">random routing</text>
+                        </g>
+
+                        <g class="topology-node topology-node--api" transform="translate(400 77)"><rect width="130" height="70"/><circle class="status" cx="112" cy="18" r="4"/><text class="eyebrow" x="14" y="25">INSTANCE / A</text><text class="label" x="14" y="49">FastAPI</text></g>
+                        <g class="topology-node topology-node--api" transform="translate(400 199)"><rect width="130" height="70"/><circle class="status" cx="112" cy="18" r="4"/><text class="eyebrow" x="14" y="25">INSTANCE / B</text><text class="label" x="14" y="49">FastAPI</text></g>
+                        <g class="topology-node topology-node--api" transform="translate(400 321)"><rect width="130" height="70"/><circle class="status" cx="112" cy="18" r="4"/><text class="eyebrow" x="14" y="25">INSTANCE / C</text><text class="label" x="14" y="49">FastAPI</text></g>
+
+                        <g class="topology-node topology-node--redis" transform="translate(600 164)">
+                            <rect width="120" height="140"/><circle class="status" cx="100" cy="20" r="5" filter="url(#topology-glow)"/><text class="eyebrow" x="16" y="31">GLOBAL BUS</text><text class="label" x="16" y="65">Redis</text><text class="meta" x="16" y="91">Pub/Sub</text><text class="meta" x="16" y="112">presence</text>
+                        </g>
+                        <g class="topology-node topology-node--ttl" transform="translate(600 372)"><rect width="120" height="55"/><text class="eyebrow" x="14" y="22">LIFECYCLE</text><text class="label" x="14" y="42">TTL cleanup</text></g>
+                    </svg>
+                    <div class="topology-legend"><span>stateless compute</span><span>cross-instance fan-out</span><span>automatic expiry</span></div>
+                </figure>
+            </div>
+        </section>
     
     <!-- Interactive Demo Section -->
-    <section class="shorturl-demo" style="position: relative; z-index: 0;">
+    <section class="shorturl-demo" id="live-demo" style="position: relative; z-index: 0;">
         <div class="demo-container">
             <div style="margin-bottom: 1rem;">
                 <a href="/" style="color: var(--primary-color); text-decoration: none; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.3s ease; padding: 0.3rem 0.7rem; border-radius: 8px; background: rgba(163, 230, 53, 0.1); border: 1px solid var(--primary-color);" onmouseover="this.style.background='rgba(163, 230, 53, 0.2)'; this.style.transform='translateX(-5px)';" onmouseout="this.style.background='rgba(163, 230, 53, 0.1)'; this.style.transform='translateX(0)'">
@@ -782,43 +841,40 @@
             </div>
             
             <div class="demo-section">
-                <h2>Live Demo - Try It Out</h2>
+                <h2>Live demo</h2>
+                <p class="service-notice" id="project-service-status" data-state="standby" role="status">External demo service. A cold start can make the first request take 10–30 seconds.</p>
                 <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
                     Experience EphemeralChat in real-time. Create or join a chat room and start messaging. Rooms automatically expire after the set time.
                 </p>
                 
-                <div style="background: rgba(163, 230, 53, 0.1); border: 1px solid var(--primary-color); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; box-shadow: 0 0 10px rgba(163, 230, 53, 0.2);">
-                    <strong style="color: var(--primary-color);">⏱️ Please Note:</strong> This service runs on Cloud Run and may take 10-30 seconds to boot up if the instance is cold. The first request after inactivity can be slower as the container needs to start. Subsequent requests will be much faster!
-                </div>
-                
                 <!-- Room Creation/Join Section -->
-                <div id="room-setup-section">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                <div id="room-setup-section" class="chat-workbench">
+                    <div class="chat-setup-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
                         <!-- Create Room -->
-                        <div style="background: #0a0a0a; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem;">
+                        <div class="chat-setup-panel chat-setup-panel--create" style="background: #0a0a0a; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem;">
                             <h3 style="color: var(--primary-color); margin-bottom: 1rem; font-size: 1.25rem;">Create Room</h3>
-                            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div class="chat-form" style="display: flex; flex-direction: column; gap: 1rem;">
                                 <div>
-                                    <label style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">Room Name</label>
+                                    <label for="room-name-input" style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">Room Name</label>
                                     <input type="text" id="room-name-input" class="url-input" placeholder="My Chat Room" style="width: 100%;">
                                 </div>
                                 <div>
-                                    <label style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">Expiry (seconds)</label>
+                                    <label for="room-expiry-input" style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">Expiry (seconds)</label>
                                     <input type="number" id="room-expiry-input" class="url-input" value="600" min="60" max="3600" style="width: 100%;">
                                 </div>
                                 <div>
-                                    <label style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">Max Users</label>
+                                    <label for="room-max-users-input" style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">Max Users</label>
                                     <input type="number" id="room-max-users-input" class="url-input" value="20" min="2" max="100" style="width: 100%;">
                                 </div>
                                 <div>
-                                    <label style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">Your Name (optional)</label>
+                                    <label for="create-user-name-input" style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">Your Name (optional)</label>
                                     <input type="text" id="create-user-name-input" class="url-input" placeholder="Leave empty for a random funny name" style="width: 100%;">
                                 </div>
                                 <div>
-                                    <label style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">Password (optional)</label>
+                                    <label for="room-password-input" style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">Password (optional)</label>
                                     <input type="password" id="room-password-input" class="url-input" placeholder="Leave empty for no password" style="width: 100%;">
                                 </div>
-                                <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem; background: rgba(163, 230, 53, 0.05); border: 1px solid var(--border-color); border-radius: 8px;">
+                                <div class="chat-destroy-option" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem; background: rgba(163, 230, 53, 0.05); border: 1px solid var(--border-color); border-radius: 8px;">
                                     <input type="checkbox" id="destroy-on-owner-offline-input" style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary-color);">
                                     <label for="destroy-on-owner-offline-input" style="color: var(--text-secondary); font-size: 0.875rem; cursor: pointer; flex: 1; margin: 0;">
                                         Destroy room when owner goes offline
@@ -829,19 +885,19 @@
                         </div>
                         
                         <!-- Join Room -->
-                        <div style="background: #0a0a0a; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem;">
+                        <div class="chat-setup-panel chat-setup-panel--join" style="background: #0a0a0a; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem;">
                             <h3 style="color: var(--primary-color); margin-bottom: 1rem; font-size: 1.25rem;">Join Room</h3>
-                            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div class="chat-form" style="display: flex; flex-direction: column; gap: 1rem;">
                                 <div>
-                                    <label style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">Your Name</label>
+                                    <label for="join-user-name-input" style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">Your Name</label>
                                     <input type="text" id="join-user-name-input" class="url-input" placeholder="Leave empty for a random funny name" style="width: 100%;">
                                 </div>
                                 <div>
-                                    <label style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">Room ID</label>
+                                    <label for="join-room-id-input" style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">Room ID</label>
                                     <input type="text" id="join-room-id-input" class="url-input" placeholder="Enter room ID" style="width: 100%;">
                                 </div>
                                 <div>
-                                    <label style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">Password (if required)</label>
+                                    <label for="join-room-password-input" style="color: var(--text-secondary); font-size: 0.875rem; display: block; margin-bottom: 0.5rem;">Password (if required)</label>
                                     <input type="password" id="join-room-password-input" class="url-input" placeholder="Enter password" style="width: 100%;">
                                 </div>
                                 <button id="join-room-btn" class="demo-btn" style="width: 100%; background: transparent; color: var(--primary-color); border-color: var(--primary-color);">Join Room</button>
@@ -851,8 +907,8 @@
                 </div>
                 
                 <!-- Chat Interface (hidden until room is joined) -->
-                <div id="chat-interface-section" style="display: none;">
-                    <div style="background: #0a0a0a; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+                <div id="chat-interface-section" class="chat-interface" style="display: none;">
+                    <div class="chat-interface__panel" style="background: #0a0a0a; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                             <div>
                                 <h3 style="color: var(--primary-color); margin-bottom: 0.5rem; font-size: 1.25rem;" id="current-room-name">Room: -</h3>
@@ -888,14 +944,13 @@
     <!-- Technology Stack & Architecture Section -->
     <section id="technology-stack-section" class="shorturl-demo" style="padding-top: 0; margin-top: -5rem; min-height: auto; position: relative; z-index: 1;">
         <div class="demo-container" style="padding-top: 0;">
-            <div class="demo-section">
-                <h2>Technology Stack & Architecture</h2>
+            <div class="demo-section project-detail-section project-detail-section--implementation">
+                <h2>Implementation</h2>
                 <p style="color: var(--text-secondary); margin-bottom: 2rem;">
-                    EphemeralChat is built with a scalable architecture designed for real-time messaging and horizontal scaling. 
-                    The system uses Redis pub/sub for message distribution across multiple instances, enabling high availability and performance.
+                    Stateless FastAPI instances use Redis Pub/Sub for cross-instance delivery, presence coordination, and TTL-backed cleanup.
                 </p>
                 
-                <div style="background: #0a0a0a; border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 0 10px rgba(163, 230, 53, 0.1);">
+                <div class="legacy-stack-summary" style="background: #0a0a0a; border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 0 10px rgba(163, 230, 53, 0.1);">
                     <h3 style="color: var(--primary-color); margin-bottom: 1.5rem; font-size: 1.25rem;">Core Technologies</h3>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
                         <div>
@@ -935,16 +990,7 @@
                     </div>
                 </div>
                 
-                <!-- Architecture Diagram Image -->
-                <div style="text-align: center; margin: 2rem 0;">
-                    <!-- Architecture diagram placeholder - can be replaced with actual diagram -->
-                    <div style="background: #0a0a0a; border: 2px solid var(--border-color); border-radius: 12px; padding: 3rem; text-align: center; color: var(--text-secondary);">
-                        <p style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--primary-color);">EphemeralChat Architecture</p>
-                        <p style="font-size: 0.875rem;">Architecture diagram showing Redis pub/sub, WebSocket connections, and horizontal scaling</p>
-                    </div>
-                </div>
-                
-                <div class="architecture-grid">
+                <div class="architecture-grid implementation-grid">
                     <div class="arch-component">
                         <img 
                             src="images/logos/python.svg" 
@@ -1027,13 +1073,12 @@
             </div>
             
             <!-- Key Features Section -->
-            <div class="demo-section">
-                <h2>Key Features</h2>
+            <div class="demo-section project-detail-section project-detail-section--capabilities">
+                <h2>Capabilities</h2>
                 <p style="color: var(--text-secondary); margin-bottom: 2rem;">
-                    EphemeralChat provides a complete solution for ephemeral chat rooms with real-time messaging, 
-                    automatic expiration, and horizontal scaling capabilities.
+                    Room lifecycle and access controls are kept explicit without adding permanent message storage.
                 </p>
-                <div class="feature-grid">
+                <div class="feature-grid capabilities-list">
                     <div class="feature-card">
                         <div class="feature-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1106,14 +1151,14 @@
             </div>
             
             <!-- API Documentation Section -->
-            <div class="demo-section">
-                <h2>API Documentation & Examples</h2>
+            <div class="demo-section project-detail-section project-detail-section--code">
+                <h2>API Reference</h2>
                 <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-                    Integrate EphemeralChat into your application using our RESTful API and WebSocket endpoints. Full interactive documentation is available.
+                    REST room management and WebSocket connection examples for a minimal client integration.
                 </p>
                 <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
                     <a href="https://ephemeralchat.hansraj.me/docs" target="_blank" rel="noopener noreferrer" class="demo-btn" style="text-decoration: none; display: inline-block;">
-                        📚 View API Documentation
+                        Open API documentation ↗
                     </a>
                 </div>
                 
@@ -1205,7 +1250,7 @@ ws.onmessage = (event) => {
             </div>
             
             <!-- Call to Action Section -->
-            <div class="demo-section" style="background: rgba(163, 230, 53, 0.05); border: 2px solid var(--primary-color);">
+            <div class="demo-section project-legacy-cta" style="background: rgba(163, 230, 53, 0.05); border: 2px solid var(--primary-color);">
                 <div style="text-align: center; padding: 1rem 0;">
                     <h2 style="color: var(--primary-color); margin-bottom: 1rem;">Need This Service for Your Use Case?</h2>
                     <p style="color: var(--text-secondary); font-size: 1.125rem; margin-bottom: 1.5rem; max-width: 800px; margin-left: auto; margin-right: auto;">
@@ -1232,18 +1277,12 @@ ws.onmessage = (event) => {
         </div>
     </section>
 
-    <!-- Footer -->
-    <div id="footer-placeholder"></div>
-    
-    <script src="script.js"></script>
+    </main>
+    <footer class="project-footer" id="footer-placeholder"><span>© <b data-project-year></b> Hansraj Deghun</span><a href="https://github.com/hansraj1999/EphemeralChat" target="_blank" rel="noopener noreferrer">Source code ↗</a><a href="index.html#systems">cd ~/projects</a></footer>
+
+    <dialog class="command-dialog" id="command-dialog"><div class="command-head"><span>⌘</span><input id="command-input" type="search" placeholder="Type a command…" aria-label="Search commands"><button id="command-close" aria-label="Close command palette">Esc</button></div><div class="command-list" id="command-list"></div></dialog>
+    <script src="project.js?v=3"></script>
     <script>
-        // Load footer
-        (async () => {
-            if (typeof loadFooter === 'function') {
-                await loadFooter();
-            }
-        })();
-        
         // EphemeralChat Demo Script
         const EPHEMERALCHAT_API_BASE = 'https://ephemeralchat.hansraj.me';
         let currentWebSocket = null;
@@ -1592,6 +1631,7 @@ ws.onmessage = (event) => {
                     
                     ws.onopen = () => {
                         clearTimeout(connectionTimeout);
+                        setProjectServiceStatus('Live service connected. Messages are streaming over WebSocket.', 'online');
                         currentWebSocket = ws;
                         // Set up all handlers now that connection is established
                         setupWebSocketHandlers(ws, roomId);
@@ -1980,6 +2020,7 @@ ws.onmessage = (event) => {
                 
                 currentWebSocket.onerror = (error) => {
                     console.error('WebSocket error:', error);
+                    setProjectServiceStatus('The WebSocket connection failed. You can retry without leaving this page.', 'error');
                     closeSuccessPopup();
                     showChatMessage('System', 'WebSocket connection error. Please check the room ID and try again.', 'error');
                     // Show room setup again on error
@@ -1999,6 +2040,7 @@ ws.onmessage = (event) => {
                 currentWebSocket.onclose = (event) => {
                     console.log('WebSocket closed:', event.code, event.reason);
                     if (event.code !== 1000) {
+                        setProjectServiceStatus('The live connection closed unexpectedly. The room controls are ready to retry.', 'error');
                         // Abnormal close - show error and reset UI
                         closeSuccessPopup();
                         showChatMessage('System', `Disconnected from room: ${event.reason || 'Connection closed'}`, 'error');
@@ -2006,6 +2048,7 @@ ws.onmessage = (event) => {
                         if (roomSetupSection) roomSetupSection.style.display = 'block';
                         if (chatInterfaceSection) chatInterfaceSection.style.display = 'none';
                     } else {
+                        setProjectServiceStatus('Live room disconnected. Create or join a room to reconnect.', 'standby');
                         showChatMessage('System', 'Disconnected from room', 'info');
                     }
                     currentWebSocket = null;

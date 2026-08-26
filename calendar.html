@@ -19,7 +19,6 @@
     <link rel="stylesheet" href="styles.css">
     
     <!-- API Configuration -->
-    <script src="config.js"></script>
     
     <!-- Sitemap -->
     <link rel="sitemap" type="application/xml" href="sitemap.xml">
@@ -160,8 +159,19 @@
     </style>
 </head>
 <body>
-    <!-- Navigation - Loaded from common navbar.html -->
-    <div id="navbar-placeholder"></div>
+    <!-- Static navigation: this utility page intentionally keeps its legacy presentation. -->
+    <nav class="navbar" id="navbar-placeholder">
+        <div class="container">
+            <a href="index.html#home" class="nav-brand">Hansraj Deghun</a>
+            <ul class="nav-links">
+                <li><a href="index.html#home">Home</a></li>
+                <li><a href="index.html#experience">Experience</a></li>
+                <li><a href="index.html#systems">Projects</a></li>
+                <li><a href="blogs.html">Writing</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
 
     <!-- Calendar Section -->
     <section id="calendar" class="calendar-section">
@@ -202,35 +212,6 @@
         </div>
     </section>
 
-    <!-- Footer - Loaded from common footer.html -->
-    <div id="footer-placeholder"></div>
-
-    <script src="script.js"></script>
-    <script>
-        // Ensure navbar and footer load even if script.js hasn't fully loaded
-        (function() {
-            if (document.getElementById('navbar-placeholder')) {
-                function tryLoadNavbar() {
-                    if (typeof loadNavbar === 'function') {
-                        loadNavbar();
-                    } else {
-                        setTimeout(tryLoadNavbar, 50);
-                    }
-                }
-                tryLoadNavbar();
-            }
-            
-            if (document.getElementById('footer-placeholder')) {
-                function tryLoadFooter() {
-                    if (typeof loadFooter === 'function') {
-                        loadFooter();
-                    } else {
-                        setTimeout(tryLoadFooter, 50);
-                    }
-                }
-                tryLoadFooter();
-            }
-        })();
-    </script>
+    <footer class="footer" id="footer-placeholder"><div class="container"><p>&copy; Hansraj Deghun. All rights reserved.</p></div></footer>
 </body>
 </html>

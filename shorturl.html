@@ -28,16 +28,16 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
-    
-    <!-- API Configuration -->
-    <script src="config.js"></script>
+    <link rel="stylesheet" href="terminal.css?v=2">
+    <link rel="stylesheet" href="project.css?v=8">
     
     <!-- Sitemap -->
     <link rel="sitemap" type="application/xml" href="sitemap.xml">
+    <link rel="canonical" href="https://hansraj.me/shorturl">
     
     <title>ShortURL - Live Demo | Hansraj Deghun</title>
     
@@ -863,12 +863,72 @@
         }
     </style>
 </head>
-<body>
-    <!-- Navigation -->
-    <div id="navbar-placeholder"></div>
+<body class="project-page">
+    <a class="skip-link" href="#live-demo">Skip to live demo</a>
+    <header class="site-header" id="navbar-placeholder">
+        <a class="terminal-brand" href="index.html#home" aria-label="Hansraj Deghun, home"><span>~/</span>hansraj-deghun <b>$</b><i aria-hidden="true"></i></a>
+        <nav aria-label="Primary navigation"><a href="index.html#experience">./experience</a><a href="index.html#writing">./writing</a><a href="index.html#skills">./skills</a><a class="is-active" href="index.html#systems">./systems</a><a href="index.html#contact">./contact</a></nav>
+        <div class="header-actions"><button id="command-button" aria-label="Open command palette">⌘K</button><a class="resume-small" href="https://drive.google.com/file/d/1dh3HAQpWbVnPlSdPzVh4nB1KLcUPBLRP/view?usp=sharing" target="_blank" rel="noopener">résumé ↗</a></div>
+    </header>
+
+    <main>
+        <section class="project-hero project-hero--topology">
+            <div class="project-masthead">
+                <div class="project-masthead__copy">
+                    <p class="prompt"><b>guest@portfolio</b><span>:</span><em>~/projects/short-url</em><span>$</span> topology</p>
+                    <p class="project-index"><span>CASE STUDY / 02</span><i aria-hidden="true"></i><span>DISTRIBUTED DATA</span></p>
+                    <h1>Short<span>URL</span></h1>
+                    <p class="project-hero__intro">A distributed redirect service that separates request routing, atomic identifier generation, durable URL mappings, and usage analytics.</p>
+                    <div class="project-actions"><a href="#live-demo">Run live demo ↓</a><a href="https://github.com/hansraj1999/shortURL" target="_blank" rel="noopener noreferrer">Source ↗</a><a href="https://shorturl.hansraj.me/docs" target="_blank" rel="noopener noreferrer">API reference ↗</a></div>
+                    <ul class="project-stack" aria-label="Technology stack"><li>FastAPI</li><li>NGINX</li><li>Redis</li><li>MongoDB</li></ul>
+                </div>
+
+                <figure class="topology-panel topology-panel--shorturl">
+                    <figcaption><span>write-read-path.live</span><b><i aria-hidden="true"></i> requests flowing</b></figcaption>
+                    <svg viewBox="0 0 760 470" role="img" aria-labelledby="shorturl-topology-title shorturl-topology-description">
+                        <title id="shorturl-topology-title">ShortURL distributed service topology</title>
+                        <desc id="shorturl-topology-description">Clients enter through NGINX and reach stateless FastAPI instances. Redis generates unique identifiers, MongoDB persists URL mappings, and redirect events feed analytics.</desc>
+                        <defs>
+                            <pattern id="shorturl-topology-grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="currentColor" stroke-opacity=".055"/></pattern>
+                            <filter id="shorturl-topology-glow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                        </defs>
+                        <rect class="topology-grid" width="760" height="470" fill="url(#shorturl-topology-grid)"/>
+
+                        <g class="topology-links" fill="none">
+                            <path d="M145 234H200"/>
+                            <path d="M320 234H342C360 234 365 135 385 135"/>
+                            <path d="M320 234H342C360 234 365 333 385 333"/>
+                            <path d="M515 135H548C563 135 565 110 580 110"/>
+                            <path d="M515 135H548C563 135 565 286 580 286"/>
+                            <path d="M515 333H548C563 333 565 110 580 110"/>
+                            <path d="M515 333H580"/>
+                            <path d="M640 150V246"/>
+                            <path d="M640 326V382"/>
+                        </g>
+                        <g class="topology-packets" fill="none">
+                            <path d="M145 234H200"/>
+                            <path d="M320 234H342C360 234 365 135 385 135"/>
+                            <path d="M515 135H548C563 135 565 110 580 110"/>
+                            <path d="M640 150V246"/>
+                        </g>
+
+                        <g class="topology-node topology-node--request" transform="translate(35 189)"><rect width="110" height="90"/><text class="eyebrow" x="14" y="28">REQUEST</text><text class="label" x="14" y="54">Client</text><text class="meta" x="14" y="73">POST / resolve</text></g>
+                        <g class="topology-node topology-node--edge" transform="translate(200 184)"><rect width="120" height="100"/><text class="eyebrow" x="16" y="28">EDGE / 01</text><text class="label" x="16" y="55">NGINX</text><text class="meta" x="16" y="79">load balancing</text></g>
+
+                        <g class="topology-node topology-node--api" transform="translate(385 100)"><rect width="130" height="70"/><circle class="status" cx="112" cy="18" r="4"/><text class="eyebrow" x="14" y="25">INSTANCE / A</text><text class="label" x="14" y="49">FastAPI</text></g>
+                        <g class="topology-node topology-node--api" transform="translate(385 298)"><rect width="130" height="70"/><circle class="status" cx="112" cy="18" r="4"/><text class="eyebrow" x="14" y="25">INSTANCE / B</text><text class="label" x="14" y="49">FastAPI</text></g>
+
+                        <g class="topology-node topology-node--redis" transform="translate(580 70)"><rect width="120" height="80"/><circle class="status" cx="101" cy="19" r="5" filter="url(#shorturl-topology-glow)"/><text class="eyebrow" x="14" y="27">ATOMIC ID</text><text class="label" x="14" y="52">Redis INCR</text><text class="meta" x="14" y="69">distributed lock</text></g>
+                        <g class="topology-node topology-node--mongo" transform="translate(580 246)"><rect width="120" height="80"/><circle class="status" cx="101" cy="19" r="4"/><text class="eyebrow" x="14" y="27">DURABLE MAP</text><text class="label" x="14" y="52">MongoDB</text><text class="meta" x="14" y="69">code → URL</text></g>
+                        <g class="topology-node topology-node--ttl" transform="translate(580 382)"><rect width="120" height="55"/><text class="eyebrow" x="14" y="22">OBSERVE</text><text class="label" x="14" y="42">Analytics</text></g>
+                    </svg>
+                    <div class="topology-legend"><span>stateless routing</span><span>atomic identifiers</span><span>durable mappings</span></div>
+                </figure>
+            </div>
+        </section>
 
     <!-- ShortURL Demo Section -->
-    <section class="shorturl-demo">
+    <section class="shorturl-demo" id="live-demo">
         <div class="demo-container">
             <div style="margin-bottom: 1rem;">
                 <a href="/" style="color: var(--primary-color); text-decoration: none; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.3s ease; padding: 0.3rem 0.7rem; border-radius: 8px; background: rgba(163, 230, 53, 0.1); border: 1px solid var(--primary-color);" onmouseover="this.style.background='rgba(163, 230, 53, 0.2)'; this.style.transform='translateX(-5px)';" onmouseout="this.style.background='rgba(163, 230, 53, 0.1)'; this.style.transform='translateX(0)';">
@@ -922,45 +982,47 @@
             <!-- URL Shortening Section -->
             <div class="demo-section">
                 <h2>Try It Out</h2>
-                <div class="url-input-section">
-                    <div style="background: rgba(163, 230, 53, 0.1); border: 1px solid var(--primary-color); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; box-shadow: 0 0 10px rgba(163, 230, 53, 0.2);">
-                        <strong style="color: var(--primary-color);">⏱️ Please Note:</strong> This service runs on GCP Cloud Run and may take 10-30 seconds to boot up if the instance is cold. The first request after inactivity can be slower as the container needs to start. Subsequent requests will be much faster!
-                    </div>
-                    <div class="input-group">
-                        <input 
-                            type="url" 
-                            id="long-url-input" 
-                            class="url-input" 
-                            placeholder="Enter a long URL to shorten (e.g., https://www.example.com/very/long/url/path)"
-                            autocomplete="off"
-                            aria-label="Long URL to shorten"
-                            aria-describedby="url-input-help"
-                        >
-                        <span id="url-input-help" style="display: none;">Enter a valid URL starting with http:// or https://</span>
-                        <button id="shorten-btn" class="demo-btn" aria-label="Shorten the entered URL">Shorten URL</button>
-                        <button id="try-example-btn" class="demo-btn" style="background: transparent; color: var(--primary-color); border-color: var(--primary-color);" aria-label="Fill with example URL">Try Example</button>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem; flex-wrap: wrap;">
-                        <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); font-size: 0.875rem; cursor: pointer;">
-                            <input type="checkbox" id="auto-copy-checkbox" style="cursor: pointer;">
-                            Auto-copy short URL
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); font-size: 0.875rem; cursor: pointer;">
-                            <input type="checkbox" id="qr-code-checkbox" checked style="cursor: pointer;">
-                            Generate QR Code
-                        </label>
-                    </div>
-                    <div id="result-section" class="result-section" role="status" aria-live="polite">
-                        <div style="display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap;">
-                            <div style="flex: 1; min-width: 300px;">
-                                <div class="result-label">Short URL:</div>
-                                <div class="result-value" id="result-value"></div>
-                                <button class="copy-btn" id="copy-btn" aria-label="Copy short URL to clipboard" style="margin-top: 1rem;">Copy to Clipboard</button>
+                <div class="url-workbench">
+                    <header class="url-workbench__bar">
+                        <span>shorturl.api / v1</span>
+                        <p class="service-notice url-workbench__status" id="project-service-status" data-state="standby" role="status">Service standby</p>
+                        <b>POST</b>
+                    </header>
+                    <div class="url-workbench__body">
+                        <label class="url-field-label" for="long-url-input">Destination URL</label>
+                        <div class="url-command-row">
+                            <span aria-hidden="true">→</span>
+                            <input
+                                type="url"
+                                id="long-url-input"
+                                class="url-input"
+                                placeholder="https://example.com/a/long/path"
+                                autocomplete="off"
+                                aria-label="Long URL to shorten"
+                                aria-describedby="url-input-help"
+                            >
+                            <button id="shorten-btn" class="demo-btn" aria-label="Shorten the entered URL">Shorten</button>
+                        </div>
+                        <span id="url-input-help" class="url-input-help" hidden>Enter a valid URL beginning with http:// or https://</span>
+                        <div class="url-workbench__options">
+                            <button id="try-example-btn" class="example-action" aria-label="Fill with example URL">Use an example URL</button>
+                            <div class="url-option-group" aria-label="Output options">
+                                <label class="option-control"><input type="checkbox" id="auto-copy-checkbox"><span>Auto-copy</span></label>
+                                <label class="option-control"><input type="checkbox" id="qr-code-checkbox" checked><span>QR code</span></label>
                             </div>
-                            <div id="qr-code-container" style="display: none; text-align: center; flex-shrink: 0;">
-                                <div class="result-label" style="margin-bottom: 0.5rem;">QR Code:</div>
-                                <img id="qr-code-image" src="" alt="QR Code" style="max-width: 200px; border: 2px solid var(--primary-color); border-radius: 8px; padding: 0.5rem; background: #ffffff;">
-                                <p style="color: var(--text-secondary); font-size: 0.875rem; margin-top: 0.5rem;">Scan to open the shortened URL</p>
+                        </div>
+                    </div>
+                    <div id="result-section" class="result-section url-workbench__result" role="status" aria-live="polite">
+                        <div class="url-result-grid">
+                            <div class="url-result-copy">
+                                <div class="result-label">Generated short URL</div>
+                                <div class="result-value" id="result-value"></div>
+                                <button class="copy-btn" id="copy-btn" aria-label="Copy short URL to clipboard">Copy URL</button>
+                            </div>
+                            <div id="qr-code-container" class="url-result-qr" style="display: none;">
+                                <div class="result-label">QR code</div>
+                                <img id="qr-code-image" src="" alt="QR Code">
+                                <p>Scan to open</p>
                             </div>
                         </div>
                     </div>
@@ -978,46 +1040,52 @@
             <!-- Analytics Section -->
             <div class="demo-section">
                 <h2>Analytics</h2>
-                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-                    Track and analyze your shortened URLs with detailed statistics including click counts, referrers, and more.
-                </p>
-                <div class="url-input-section">
-                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;" role="tablist" aria-label="Analytics view options">
-                        <button id="analytics-type-single" class="demo-btn" style="flex: 1; min-width: 150px; background: var(--primary-color); color: #000000;" role="tab" aria-selected="true" aria-controls="analytics-input-container">Search Analytics by URL</button>
-                        <button id="analytics-type-all" class="demo-btn" style="flex: 1; min-width: 150px; background: transparent; color: var(--primary-color); border-color: var(--primary-color);" role="tab" aria-selected="false">All URLs</button>
-                        <button id="analytics-type-stats" class="demo-btn" style="flex: 1; min-width: 150px; background: transparent; color: var(--primary-color); border-color: var(--primary-color);" role="tab" aria-selected="false">Overall Stats</button>
+                <div class="analytics-workbench">
+                    <header class="analytics-workbench__bar">
+                        <span>analytics.api / v1</span>
+                        <b>GET</b>
+                    </header>
+                    <div class="analytics-mode-switcher" role="tablist" aria-label="Analytics view options">
+                        <button id="analytics-type-single" class="analytics-mode" role="tab" aria-selected="true" aria-controls="analytics-input-container analytics-result-section"><span>01</span> URL lookup</button>
+                        <button id="analytics-type-all" class="analytics-mode" role="tab" aria-selected="false" aria-controls="analytics-result-section"><span>02</span> All links</button>
+                        <button id="analytics-type-stats" class="analytics-mode" role="tab" aria-selected="false" aria-controls="analytics-result-section"><span>03</span> Totals</button>
                     </div>
-                    <p id="analytics-description-text" style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-                        View detailed analytics for any shortened URL. Enter the short code (e.g., "1n" or "gb") or full URL (e.g., "https://shorturl.hansraj.me/1n") to see click statistics, referrers, and more.
-                    </p>
-                    <div id="analytics-input-container" role="tabpanel" aria-labelledby="analytics-type-single">
-                        <div class="input-group">
-                            <input 
-                                type="text" 
-                                id="analytics-code-input" 
-                                class="url-input" 
-                                placeholder="Enter short code or full URL (e.g., 1n or https://shorturl.hansraj.me/1n)"
-                                autocomplete="off"
-                                aria-label="Short URL code or full URL for analytics"
-                            >
-                            <button id="fetch-analytics-btn" class="demo-btn" aria-label="Fetch analytics for the entered URL">Fetch Analytics</button>
+                    <div class="analytics-workbench__body">
+                        <p id="analytics-description-text" class="analytics-description">
+                            Inspect redirect activity and lifecycle data for one shortened URL.
+                        </p>
+                        <div id="analytics-input-container" role="tabpanel" aria-labelledby="analytics-type-single">
+                            <label class="url-field-label" for="analytics-code-input">Short link lookup</label>
+                            <div class="analytics-command-row">
+                                <span class="analytics-command-prefix" aria-hidden="true">URL</span>
+                                <input
+                                    type="text"
+                                    id="analytics-code-input"
+                                    class="url-input"
+                                    placeholder="Enter code or URL"
+                                    autocomplete="off"
+                                    aria-label="Short URL code or full URL for analytics"
+                                    aria-describedby="analytics-input-note"
+                                >
+                                <button id="fetch-analytics-btn" class="demo-btn" aria-label="Fetch analytics for the entered URL">Inspect</button>
+                            </div>
+                            <p class="analytics-input-note" id="analytics-input-note">Accepts a short code or a complete ShortURL link.</p>
                         </div>
-                    </div>
-                    <div id="analytics-result-section" class="result-section" role="status" aria-live="polite">
-                        <div id="analytics-content"></div>
+                        <div id="analytics-result-section" class="result-section analytics-workbench__result" role="status" aria-live="polite">
+                            <div id="analytics-content"></div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Architecture Section -->
-            <div class="demo-section">
-                <h2>Technology Stack & Architecture</h2>
+            <div class="demo-section project-detail-section project-detail-section--implementation">
+                <h2>Implementation</h2>
                 <p style="color: var(--text-secondary); margin-bottom: 2rem;">
-                    ShortURL is built with a microservices architecture designed for high availability and scalability. 
-                    The system uses distributed components to handle millions of URL shortening requests efficiently.
+                    Routing, identifier generation, durable mappings, and observability are separated so each concern can evolve independently.
                 </p>
                 
-                <div style="background: #0a0a0a; border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 0 10px rgba(163, 230, 53, 0.1);">
+                <div class="legacy-stack-summary" style="background: #0a0a0a; border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 0 10px rgba(163, 230, 53, 0.1);">
                     <h3 style="color: var(--primary-color); margin-bottom: 1.5rem; font-size: 1.25rem;">Core Technologies</h3>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
                         <div>
@@ -1057,17 +1125,7 @@
                     </div>
                 </div>
                 
-                <!-- Architecture Diagram Image -->
-                <div style="text-align: center; margin: 2rem 0;">
-                    <img 
-                        src="https://via.placeholder.com/800x400/0a0a0a/a3e635?text=ShortURL+Architecture+Diagram" 
-                        alt="ShortURL System Architecture Diagram"
-                        class="architecture-diagram"
-                        onerror="this.style.display='none'"
-                    >
-                </div>
-                
-                <div class="architecture-grid">
+                <div class="architecture-grid implementation-grid">
                     <div class="arch-component">
                         <img 
                             src="images/logos/python.svg" 
@@ -1149,11 +1207,11 @@
             </div>
 
             <!-- Flow Diagram -->
-            <div class="demo-section">
+            <div class="demo-section project-detail-section project-detail-section--flow">
                 <h2>Request Flow</h2>
                 <div class="flow-diagram">
                     <div class="flow-step">
-                        <div class="flow-number">1</div>
+                        <div class="flow-number">01</div>
                         <div class="flow-content">
                             <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
                                 <img src="images/logos/html5.svg" alt="Client" style="width: 32px; height: 32px; filter: drop-shadow(0 0 5px rgba(163, 230, 53, 0.5));">
@@ -1164,7 +1222,7 @@
                     </div>
                     <div class="flow-arrow">↓</div>
                     <div class="flow-step">
-                        <div class="flow-number">2</div>
+                        <div class="flow-number">02</div>
                         <div class="flow-content">
                             <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
                                 <img src="images/logos/nginx.svg" alt="NGINX" style="width: 32px; height: 32px; filter: drop-shadow(0 0 5px rgba(163, 230, 53, 0.5));">
@@ -1175,7 +1233,7 @@
                     </div>
                     <div class="flow-arrow">↓</div>
                     <div class="flow-step">
-                        <div class="flow-number">3</div>
+                        <div class="flow-number">03</div>
                         <div class="flow-content">
                             <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
                                 <img src="images/logos/redis.svg" alt="Redis" style="width: 32px; height: 32px; filter: drop-shadow(0 0 5px rgba(163, 230, 53, 0.5));">
@@ -1186,7 +1244,7 @@
                     </div>
                     <div class="flow-arrow">↓</div>
                     <div class="flow-step">
-                        <div class="flow-number">4</div>
+                        <div class="flow-number">04</div>
                         <div class="flow-content">
                             <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
                                 <img src="images/logos/python.svg" alt="Python" style="width: 32px; height: 32px; filter: drop-shadow(0 0 5px rgba(163, 230, 53, 0.5));">
@@ -1197,7 +1255,7 @@
                     </div>
                     <div class="flow-arrow">↓</div>
                     <div class="flow-step">
-                        <div class="flow-number">5</div>
+                        <div class="flow-number">05</div>
                         <div class="flow-content">
                             <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
                                 <img src="images/logos/mongodb.svg" alt="MongoDB" style="width: 32px; height: 32px; filter: drop-shadow(0 0 5px rgba(163, 230, 53, 0.5));">
@@ -1208,7 +1266,7 @@
                     </div>
                     <div class="flow-arrow">↓</div>
                     <div class="flow-step">
-                        <div class="flow-number">6</div>
+                        <div class="flow-number">06</div>
                         <div class="flow-content">
                             <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
                                 <img src="images/logos/prometheus.svg" alt="Prometheus" style="width: 32px; height: 32px; filter: drop-shadow(0 0 5px rgba(163, 230, 53, 0.5));">
@@ -1221,8 +1279,8 @@
             </div>
 
             <!-- Service Statistics Section -->
-            <div class="demo-section" id="service-stats-section">
-                <h2>Service Statistics</h2>
+            <div class="demo-section project-detail-section project-detail-section--metrics" id="service-stats-section">
+                <h2>Live Service</h2>
                 <div class="analytics-stats" id="service-stats-container">
                     <div class="stat-card">
                         <div class="stat-value" id="total-service-urls">-</div>
@@ -1232,19 +1290,11 @@
                         <div class="stat-value" id="total-service-redirects">-</div>
                         <div class="stat-label">Total Redirects</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="service-uptime">99.9%</div>
-                        <div class="stat-label">Uptime</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="avg-response-time">&lt;100ms</div>
-                        <div class="stat-label">Avg Response Time</div>
-                    </div>
                 </div>
             </div>
 
             <!-- Call to Action Section -->
-            <div class="demo-section" style="background: rgba(163, 230, 53, 0.05); border: 2px solid var(--primary-color);">
+            <div class="demo-section project-legacy-cta" style="background: rgba(163, 230, 53, 0.05); border: 2px solid var(--primary-color);">
                 <div style="text-align: center; padding: 1rem 0;">
                     <h2 style="color: var(--primary-color); margin-bottom: 1rem;">Need This Service for Your Use Case?</h2>
                     <p style="color: var(--text-secondary); font-size: 1.125rem; margin-bottom: 1.5rem; max-width: 800px; margin-left: auto; margin-right: auto;">
@@ -1267,14 +1317,14 @@
             </div>
 
             <!-- API Documentation Section -->
-            <div class="demo-section">
-                <h2>API Documentation & Examples</h2>
+            <div class="demo-section project-detail-section project-detail-section--code">
+                <h2>API Reference</h2>
                 <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
-                    Integrate ShortURL into your application using our RESTful API. Full interactive documentation is available.
+                    The public endpoint, request shape, and two minimal integration examples.
                 </p>
                 <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
                     <a href="https://shorturl.hansraj.me/docs" target="_blank" rel="noopener noreferrer" class="demo-btn" style="text-decoration: none; display: inline-block;">
-                        📚 View API Documentation
+                        Open API documentation ↗
                     </a>
                 </div>
                 
@@ -1329,9 +1379,9 @@ console.log('Short URL:', data.short_url);</code></pre>
             </div>
 
             <!-- Features Section -->
-            <div class="demo-section">
-                <h2>Key Features</h2>
-                <div class="features-grid">
+            <div class="demo-section project-detail-section project-detail-section--capabilities">
+                <h2>Capabilities</h2>
+                <div class="features-grid capabilities-list">
                     <div class="feature-item">
                         <p>Generate Short URLs</p>
                     </div>
@@ -1361,28 +1411,14 @@ console.log('Short URL:', data.short_url);</code></pre>
         </div>
     </section>
 
-    <!-- Footer -->
-    <div id="footer-placeholder"></div>
+    </main>
+    <footer class="project-footer" id="footer-placeholder"><span>© <b data-project-year></b> Hansraj Deghun</span><a href="https://github.com/hansraj1999/shortURL" target="_blank" rel="noopener noreferrer">Source code ↗</a><a href="index.html#systems">cd ~/projects</a></footer>
 
-    <script src="script.js"></script>
+    <dialog class="command-dialog" id="command-dialog"><div class="command-head"><span>⌘</span><input id="command-input" type="search" placeholder="Type a command…" aria-label="Search commands"><button id="command-close" aria-label="Close command palette">Esc</button></div><div class="command-list" id="command-list"></div></dialog>
+    <script src="project.js?v=3"></script>
     <script>
         // ShortURL Demo Script
         const SHORTURL_API_BASE = 'https://shorturl.hansraj.me';
-        
-        // Load navbar and footer
-        (async function() {
-            if (typeof loadNavbar === 'function') {
-                await loadNavbar();
-            } else {
-                setTimeout(arguments.callee, 50);
-            }
-            
-            if (typeof loadFooter === 'function') {
-                await loadFooter();
-            } else {
-                setTimeout(arguments.callee, 50);
-            }
-        })();
         
         // DOM elements
         const longUrlInput = document.getElementById('long-url-input');
@@ -1780,14 +1816,14 @@ console.log('Short URL:', data.short_url);</code></pre>
             // Disable button and show loading
             fetchAnalyticsBtn.disabled = true;
             const loadingText = currentAnalyticsType === 'single' 
-                ? 'Fetching Analytics (may take 10-30s on cold start)'
+                ? 'Querying'
                 : currentAnalyticsType === 'all'
-                ? 'Loading All URLs (may take 10-30s on cold start)'
-                : 'Loading Overall Stats (may take 10-30s on cold start)';
+                ? 'Loading links'
+                : 'Loading totals';
             fetchAnalyticsBtn.innerHTML = `${loadingText}<span class="loading-spinner"></span>`;
             
             // Show loading message
-            showAnalyticsResult('⏳ Fetching analytics... This may take 10-30 seconds if the Cloud Run instance is starting up. Please wait...', 'success', false);
+            showAnalyticsResult('Querying analytics… Cold starts can take 10–30 seconds.', 'success', false);
             
             try {
                 // Prepare request headers matching the API documentation
@@ -1857,10 +1893,10 @@ console.log('Short URL:', data.short_url);</code></pre>
             } finally {
                 fetchAnalyticsBtn.disabled = false;
                 const buttonText = currentAnalyticsType === 'single' 
-                    ? 'Fetch Analytics'
+                    ? 'Inspect'
                     : currentAnalyticsType === 'all'
-                    ? 'Load All URLs'
-                    : 'Load Overall Stats';
+                    ? 'Load links'
+                    : 'Load totals';
                 fetchAnalyticsBtn.innerHTML = buttonText;
             }
         }
@@ -1872,16 +1908,6 @@ console.log('Short URL:', data.short_url);</code></pre>
         function setAnalyticsType(type, preserveInput = false) {
             currentAnalyticsType = type;
             
-            // Update button styles
-            document.getElementById('analytics-type-single').style.background = type === 'single' ? 'var(--primary-color)' : 'transparent';
-            document.getElementById('analytics-type-single').style.color = type === 'single' ? '#000000' : 'var(--primary-color)';
-            
-            document.getElementById('analytics-type-all').style.background = type === 'all' ? 'var(--primary-color)' : 'transparent';
-            document.getElementById('analytics-type-all').style.color = type === 'all' ? '#000000' : 'var(--primary-color)';
-            
-            document.getElementById('analytics-type-stats').style.background = type === 'stats' ? 'var(--primary-color)' : 'transparent';
-            document.getElementById('analytics-type-stats').style.color = type === 'stats' ? '#000000' : 'var(--primary-color)';
-            
             // Show/hide input based on type
             const inputContainer = document.getElementById('analytics-input-container');
             const resultSection = document.getElementById('analytics-result-section');
@@ -1891,13 +1917,20 @@ console.log('Short URL:', data.short_url);</code></pre>
             document.getElementById('analytics-type-single').setAttribute('aria-selected', type === 'single' ? 'true' : 'false');
             document.getElementById('analytics-type-all').setAttribute('aria-selected', type === 'all' ? 'true' : 'false');
             document.getElementById('analytics-type-stats').setAttribute('aria-selected', type === 'stats' ? 'true' : 'false');
+
+            const descriptions = {
+                single: 'Inspect redirect activity and lifecycle data for one shortened URL.',
+                all: 'Loading the URL registry with creation dates and redirect activity.',
+                stats: 'Loading aggregate URL creation and redirect totals.'
+            };
+            descriptionText.textContent = descriptions[type];
             
             if (type === 'single') {
                 inputContainer.style.display = 'block';
                 inputContainer.setAttribute('role', 'tabpanel');
                 descriptionText.style.display = 'block';
                 // Clear previous results when switching to single URL search
-                resultSection.className = 'result-section';
+                resultSection.className = 'result-section analytics-workbench__result';
                 document.getElementById('analytics-content').innerHTML = '';
                 // Clear input field only if not preserving it
                 if (!preserveInput) {
@@ -1908,7 +1941,7 @@ console.log('Short URL:', data.short_url);</code></pre>
                 inputContainer.removeAttribute('role');
                 descriptionText.style.display = 'block'; // Keep description visible for all/stats
                 // Clear previous results before fetching new data
-                resultSection.className = 'result-section';
+                resultSection.className = 'result-section analytics-workbench__result';
                 document.getElementById('analytics-content').innerHTML = '';
                 // Auto-fetch for all/stats
                 fetchAnalytics();
@@ -1917,7 +1950,7 @@ console.log('Short URL:', data.short_url);</code></pre>
         
         // Display analytics data
         function displayAnalytics(data, shortCode) {
-            analyticsResultSection.className = 'result-section show success';
+            analyticsResultSection.className = 'result-section analytics-workbench__result show success';
             
             // Check if data is empty or null
             if (!data || (typeof data === 'object' && Object.keys(data).length === 0)) {
@@ -2127,9 +2160,8 @@ console.log('Short URL:', data.short_url);</code></pre>
             if (createdAt !== 'N/A') {
                 html += `
                     <div class="stat-card">
-                        <div class="stat-value" style="font-size: 1.5rem;">📅</div>
+                        <div class="stat-value stat-value--date">${createdAt}</div>
                         <div class="stat-label">Created</div>
-                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">${createdAt}</div>
                     </div>
                 `;
             }
@@ -2138,17 +2170,15 @@ console.log('Short URL:', data.short_url);</code></pre>
             if (lastRedirect !== 'Never') {
                 html += `
                     <div class="stat-card">
-                        <div class="stat-value" style="font-size: 1.5rem;">🔄</div>
+                        <div class="stat-value stat-value--date">${lastRedirect}</div>
                         <div class="stat-label">Last Redirect</div>
-                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">${lastRedirect}</div>
                     </div>
                 `;
             } else {
                 html += `
                     <div class="stat-card">
-                        <div class="stat-value" style="font-size: 1.5rem;">⏳</div>
+                        <div class="stat-value stat-value--date">Never</div>
                         <div class="stat-label">Last Redirect</div>
-                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">Never</div>
                     </div>
                 `;
             }
@@ -2189,27 +2219,21 @@ console.log('Short URL:', data.short_url);</code></pre>
         
         // Show no data message with better formatting
         function showNoDataMessage(shortCode) {
-            analyticsResultSection.className = 'result-section show success';
+            analyticsResultSection.className = 'result-section analytics-workbench__result show success';
             analyticsContent.innerHTML = `
-                <div style="text-align: center; padding: 2rem;">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
-                    <h3 style="color: var(--primary-color); margin-bottom: 1rem; font-size: 1.5rem;">Analytics for: ${SHORTURL_API_BASE}/${shortCode}</h3>
-                    <div style="background: rgba(163, 230, 53, 0.1); border: 1px solid var(--primary-color); border-radius: 8px; padding: 1.5rem; margin: 2rem auto; max-width: 600px;">
-                        <p style="color: var(--text-secondary); font-size: 1.125rem; margin-bottom: 1rem;">
-                            <strong style="color: var(--primary-color);">No analytics data available</strong>
-                        </p>
-                        <p style="color: var(--text-secondary); margin-bottom: 0.5rem;">
-                            This could mean:
-                        </p>
-                        <ul style="color: var(--text-secondary); text-align: left; display: inline-block; margin: 1rem 0;">
+                <div class="analytics-empty">
+                    <div class="analytics-empty__eyebrow">NO DATA / ${shortCode || 'UNKNOWN'}</div>
+                    <h3>No analytics data available</h3>
+                    <p>${SHORTURL_API_BASE}/${shortCode || ''}</p>
+                    <div class="analytics-empty__reasons">
+                        <p>This can mean:</p>
+                        <ul>
                             <li>The short URL code doesn't exist</li>
-                            <li>The URL hasn't been clicked yet (no data to show)</li>
-                            <li>The analytics haven't been collected for this URL</li>
+                            <li>The URL has not received a redirect yet</li>
+                            <li>Analytics have not been collected for this URL</li>
                         </ul>
-                        <p style="color: var(--text-secondary); margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">
-                            💡 <strong>Tip:</strong> Make sure you're using just the short code (e.g., "sa") and not the full URL.
-                        </p>
                     </div>
+                    <p class="analytics-empty__tip">Try the short code alone, for example <code>sa</code>.</p>
                 </div>
             `;
             analyticsResultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -2217,7 +2241,7 @@ console.log('Short URL:', data.short_url);</code></pre>
         
         // Show analytics result (for errors)
         function showAnalyticsResult(message, type) {
-            analyticsResultSection.className = `result-section show ${type}`;
+            analyticsResultSection.className = `result-section analytics-workbench__result show ${type}`;
             analyticsContent.innerHTML = `<div style="color: ${type === 'error' ? '#f87171' : 'var(--text-primary)'};">${message}</div>`;
             analyticsResultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
